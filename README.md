@@ -100,13 +100,11 @@ annasetu/
 │       ├── index.html            # Landing page & live ticker
 │       ├── farmer_book.html      # Farmer booking wizard
 │       ├── farmer_track.html     # Live 5-stage tracker & e-receipt
-│       ├── centers_compare.html  # Multi-center load comparison
+│       ├── centers_compare.html  # Multi-center load comparison      
 │       ├── staff_dashboard.html  # Mandi operator console
 │       ├── admin_dashboard.html  # Ministry analytics dashboard
 │       └── ivr_demo.html         # Voice / IVR phone simulator
-├── docs/
-│   ├── SIH_PRESENTATION_GUIDE.md # 3-minute pitch script, slide outline, judge Q&A
-│   └── ARCHITECTURE.md           # Architecture diagrams & algorithmic formulations
+|
 ├── run.py                        # One-click startup script
 └── requirements.txt
 ```
