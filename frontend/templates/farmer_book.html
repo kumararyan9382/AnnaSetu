@@ -1,0 +1,440 @@
+{% extends "base.html" %}
+
+{% block title %}Book Procurement Slot (फसल स्लॉट बुक करें) | AnnaSetu (अन्नसेतु){% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-3 sm:px-6 lg:px-8 py-6 space-y-6">
+
+    <!-- Top Banner: Audio Guide & Fast 1-Click Demo Fill -->
+    <div class="bg-gradient-to-r from-emerald-800 via-emerald-700 to-teal-800 text-white rounded-3xl p-5 sm:p-7 shadow-lg relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-4">
+        <div class="space-y-1 text-center md:text-left">
+            <div class="inline-flex items-center space-x-2 bg-emerald-900/60 px-3 py-1 rounded-full text-xs font-bold text-emerald-200">
+                <span>🔊</span>
+                <span>किसान भाइयों के लिए आवाज़ सहायता (Voice Guided)</span>
+            </div>
+            <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-white">
+                फसल उपार्जन स्लॉट बुकिंग
+            </h1>
+            <p class="text-xs sm:text-sm text-emerald-100/90 font-medium">
+                आसान ३ चरणों में स्लॉट बुक करें और मंडी में बिना लाइन टोकन प्राप्त करें
+            </p>
+        </div>
+
+        <div class="flex flex-wrap items-center justify-center gap-2">
+            <!-- Listen to full page button -->
+            <button type="button" onclick="speakSectionHelp('intro')" class="px-4 py-2.5 bg-white text-emerald-900 hover:bg-emerald-50 rounded-2xl text-xs font-extrabold shadow flex items-center space-x-2 transition-transform hover:scale-105">
+                <span class="text-base">📢</span>
+                <span>पूरा फॉर्म सुनें</span>
+            </button>
+
+            <!-- 1-Click Auto Fill Demo Profile -->
+            <button type="button" onclick="fillDemoFarmerProfile()" class="px-4 py-2.5 bg-amber-400 hover:bg-amber-500 text-slate-950 rounded-2xl text-xs font-black shadow flex items-center space-x-1.5 transition-transform hover:scale-105">
+                <span>⚡</span>
+                <span>डेमो प्रोफाइल भरें</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- IMD Mandi Weather Guard & Spoilage Protection Card -->
+    <div class="bg-gradient-to-r from-blue-950 via-slate-900 to-indigo-950 text-white rounded-3xl p-4 sm:p-5 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4 border border-blue-600/40">
+        <div class="flex items-center space-x-3.5 text-center sm:text-left">
+            <div class="w-12 h-12 rounded-2xl bg-blue-500/20 text-amber-400 flex items-center justify-center text-3xl shadow-inner border border-blue-400/30">
+                ☀️
+            </div>
+            <div>
+                <div class="flex items-center justify-center sm:justify-start space-x-2">
+                    <span class="font-black text-sm text-amber-300">IMD मंडी मौसम गार्ड (Weather Guard)</span>
+                    <span class="bg-blue-500/30 text-blue-200 text-[10px] font-extrabold px-2 py-0.5 rounded-full border border-blue-400/30">Live Satellite Telemetry</span>
+                </div>
+                <p class="text-xs text-slate-200 mt-0.5">
+                    करनाल उपार्जन केंद्र: <b>28.5°C • साफ मौसम</b> &bull; वर्षा जोखिम: <b class="text-emerald-400">8% (खुली ट्रॉली सुरक्षित)</b>
+                </p>
+            </div>
+        </div>
+        <button type="button" onclick="speakVoiceAnnouncement('करनाल अनाज मंडी में आज मौसम साफ और सूखा है। वर्षा का जोखिम मात्र 8 प्रतिशत है। खुली ट्रॉली में अनाज लाना पूरी तरह सुरक्षित है।')" class="px-4 py-2 bg-blue-600/60 hover:bg-blue-600 border border-blue-400/80 text-white rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all shadow-xs shrink-0">
+            <span>🔊</span>
+            <span>मौसम सुनें (Weather Audio)</span>
+        </button>
+    </div>
+
+    <!-- ISRO Bhuvan / Sentinel Satellite NDVI Crop Maturity Banner -->
+    <div class="bg-gradient-to-r from-emerald-950 via-slate-900 to-teal-950 text-white rounded-3xl p-4 sm:p-5 shadow-lg flex flex-col sm:flex-row items-center justify-between gap-4 border border-emerald-600/40">
+        <div class="flex items-center space-x-3.5 text-center sm:text-left">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-3xl shadow-inner border border-emerald-400/30">
+                🛰️
+            </div>
+            <div>
+                <div class="flex items-center justify-center sm:justify-start space-x-2">
+                    <span class="font-black text-sm text-emerald-300">ISRO Bhuvan / Sentinel रिमोट सेंसिंग</span>
+                    <span class="bg-emerald-500/30 text-emerald-200 text-[10px] font-extrabold px-2 py-0.5 rounded-full border border-emerald-400/30">NDVI: 0.74 (Peak Maturity)</span>
+                </div>
+                <p class="text-xs text-slate-200 mt-0.5">
+                    करनाल क्षेत्र फसल परिपक्वता: <b class="text-emerald-400">96% (कटाई व बिक्री का सर्वोत्तम समय सक्रिय)</b>
+                </p>
+            </div>
+        </div>
+        <button type="button" onclick="speakVoiceAnnouncement('इसरो भुवन सैटेलाइट के अनुसार आपकी गेहूं की फसल 96 प्रतिशत परिपक्व हो चुकी है। यह मंडी में बिक्री का सबसे उपयुक्त समय है।')" class="px-4 py-2 bg-emerald-700/60 hover:bg-emerald-600 border border-emerald-400/80 text-white rounded-xl text-xs font-bold flex items-center space-x-1.5 transition-all shadow-xs shrink-0">
+            <span>🔊</span>
+            <span>सैटेलाइट रिपोर्ट सुनें</span>
+        </button>
+    </div>
+
+    <!-- Booking Form Container -->
+    <div class="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-5 sm:p-8 space-y-8">
+        <form id="slot-booking-form" onsubmit="submitBookingForm(event)" class="space-y-8">
+            
+            <!-- ========================================== -->
+            <!-- STEP 1: Farmer Profile & Contact -->
+            <!-- ========================================== -->
+            <div class="space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center space-x-3">
+                        <span class="w-8 h-8 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-black text-sm shadow-xs">१</span>
+                        <div>
+                            <h3 class="font-black text-slate-900 text-base" data-i18n="step_1_title">किसान का नाम और पता (Farmer Details)</h3>
+                            <p class="text-[11px] text-slate-500" data-i18n="step_1_sub">जिसके नाम पर टोकन जारी होगा</p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="speakSectionHelp('profile')" class="text-xs text-emerald-700 bg-emerald-50 hover:bg-emerald-100 font-bold px-3 py-1.5 rounded-xl border border-emerald-200 flex items-center space-x-1">
+                        <span>🔊</span>
+                        <span>सुनें</span>
+                    </button>
+                </div>
+
+                <!-- Farmer Registration Number (FRN / MFMB) Input & Verification -->
+                <div class="bg-slate-50 border-2 border-slate-200 rounded-2xl p-4 space-y-2">
+                    <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2">
+                        <label class="block text-xs font-extrabold text-slate-800">
+                            🌾 किसान पंजीकरण संख्या (Farmer Registration No. / Meri Fasal Mera Byora ID) *
+                        </label>
+                        <span id="frn-verified-badge" class="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-black rounded-full border border-emerald-300">
+                            ✓ MFMB पोर्टल सत्यापित (Govt Verified)
+                        </span>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <input type="text" id="farmer-reg-no" placeholder="उदा. MFMB-2026-KR-8821" class="w-full px-4 py-2.5 rounded-xl border-2 border-slate-200 text-sm font-mono font-bold text-slate-900 focus:border-emerald-600 focus:ring-2 focus:ring-emerald-100 focus:outline-none" />
+                        <button type="button" onclick="verifyBookingFRN()" class="px-4 py-2.5 bg-emerald-700 hover:bg-emerald-800 text-white rounded-xl text-xs font-bold shadow-xs whitespace-nowrap">
+                            🔍 सत्यापित करें
+                        </button>
+                        <button type="button" onclick="fillDemoBookingFRN()" class="px-3 py-2.5 bg-amber-400 hover:bg-amber-500 text-slate-950 rounded-xl text-xs font-black shadow-xs whitespace-nowrap">
+                            ⚡ डेमो FRN
+                        </button>
+                    </div>
+                </div>
+
+                <!-- e-Bhulekh Land Record Quota Validator -->
+                <div class="bg-emerald-50/80 border-2 border-emerald-300 rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                    <div class="flex items-center space-x-3 text-emerald-950 font-bold text-center sm:text-left">
+                        <span class="text-2xl">🛡️</span>
+                        <div>
+                            <p class="text-xs font-extrabold text-emerald-900 flex items-center justify-center sm:justify-start space-x-1.5">
+                                <span>e-Bhulekh डिजिटल भूमि रिकॉर्ड सत्यापित</span>
+                                <span class="bg-emerald-600 text-white text-[9px] font-black px-1.5 py-0.2 rounded-full">GOVT VERIFIED</span>
+                            </p>
+                            <p class="text-[11px] text-emerald-800 font-medium mt-0.5">
+                                भूमि: <b>4.50 एकड़ (खसरा #214/12, तरावड़ी)</b> &bull; अधिकतम स्वीकृत MSP कोटा: <b id="quota-limit-display">90.0 क्विंटल (गेहूं)</b>
+                            </p>
+                        </div>
+                    </div>
+                    <span id="quota-status-badge" class="px-3.5 py-1.5 bg-emerald-600 text-white text-[10px] font-black rounded-full shadow-xs whitespace-nowrap">
+                        ✓ कोटा सीमा के अंदर
+                    </span>
+                </div>
+                <div id="quota-warning-box" class="hidden p-3 bg-amber-50 border border-amber-300 rounded-2xl text-xs text-amber-900 font-bold flex items-center space-x-2">
+                    <span>⚠️</span>
+                    <span>ध्यान दें: चयनित मात्रा आपके पंजीकृत भूमि कोटा (90 क्विंटल) से अधिक है। अतिरिक्त मात्रा हेतु तहसीलदार भौतिक सत्यापन आवश्यक है।</span>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-extrabold text-slate-800 mb-1">
+                            👤 किसान का पूरा नाम (Farmer Name) *
+                        </label>
+                        <input type="text" id="farmer-name" class="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 text-sm font-bold text-slate-900 focus:border-emerald-600 focus:ring-4 focus:ring-emerald-100 focus:outline-none" placeholder="किसान का नाम दर्ज करें (Enter Farmer Name)" value="" required />
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-extrabold text-slate-800 mb-1">
+                            📱 मोबाइल नंबर (10-Digit Mobile) *
+                        </label>
+                        <input type="tel" id="farmer-phone" pattern="[0-9]{10}" class="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 text-sm font-bold text-slate-900 font-mono focus:border-emerald-600 focus:ring-4 focus:ring-emerald-100 focus:outline-none" placeholder="10-अंकों का मोबाइल नंबर (Enter Mobile No.)" value="" required />
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-extrabold text-slate-800 mb-1">
+                            🏡 गाँव का नाम (Village / Gram) *
+                        </label>
+                        <input type="text" id="farmer-village" class="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 text-sm font-bold text-slate-900 focus:border-emerald-600 focus:ring-4 focus:ring-emerald-100 focus:outline-none" placeholder="गाँव का नाम दर्ज करें (Enter Village)" value="" required />
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-extrabold text-slate-800 mb-1">
+                            📍 ज़िला (District) *
+                        </label>
+                        <input type="text" id="farmer-district" class="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 text-sm font-bold text-slate-900 focus:border-emerald-600 focus:ring-4 focus:ring-emerald-100 focus:outline-none" placeholder="ज़िले का नाम दर्ज करें (Enter District)" value="" required />
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- STEP 2: Visual Crop Selection & Quantity -->
+            <!-- ========================================== -->
+            <div class="space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center space-x-3">
+                        <span class="w-8 h-8 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-black text-sm shadow-xs">२</span>
+                        <div>
+                            <h3 class="font-black text-slate-900 text-base" data-i18n="step_2_title">फसल और वाहन चुनें (Select Crop & Quantity)</h3>
+                            <p class="text-[11px] text-slate-500" data-i18n="step_2_sub">चित्र देखकर अपनी फसल पर टच करें</p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="speakSectionHelp('crop')" class="text-xs text-emerald-700 bg-emerald-50 hover:bg-emerald-100 font-bold px-3 py-1.5 rounded-xl border border-emerald-200 flex items-center space-x-1">
+                        <span>🔊</span>
+                        <span>सुनें</span>
+                    </button>
+                </div>
+
+                <!-- Hidden select for compatibility with backend payload -->
+                <select id="crop-select" class="hidden">
+                    {% for crop_name, cinfo in crops.items() %}
+                    <option value="{{ crop_name }}">{{ crop_name }} — ₹{{ cinfo.msp_per_quintal }}/Qtl</option>
+                    {% endfor %}
+                </select>
+
+                <!-- Pictorial Visual Crop Cards Grid -->
+                <div>
+                    <label class="block text-xs font-extrabold text-slate-700 mb-2" data-i18n="tap_crop_label">अपनी फसल का चित्र चुनें (Tap your crop):</label>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+                        
+                        <!-- Wheat Card -->
+                        <div id="crop-card-wheat" onclick="selectCropVisual('Wheat (गेहूं)', 2425)" class="crop-visual-card cursor-pointer p-4 rounded-2xl border-2 border-emerald-600 bg-emerald-50 ring-4 ring-emerald-200 shadow-sm transition-all hover:scale-105 text-center space-y-1 relative">
+                            <span class="crop-check-icon absolute top-2 right-2 w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold">✓</span>
+                            <div class="text-3xl">🌾</div>
+                            <h4 class="font-black text-slate-900 text-sm" data-i18n="crop_wheat">गेहूं (Wheat)</h4>
+                            <span class="inline-block px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-black">₹2,425/Qtl</span>
+                        </div>
+
+                        <!-- Mustard Card -->
+                        <div id="crop-card-mustard" onclick="selectCropVisual('Mustard / Rapeseed (सरसों)', 5950)" class="crop-visual-card cursor-pointer p-4 rounded-2xl border-2 border-slate-200 bg-white shadow-sm transition-all hover:scale-105 text-center space-y-1 relative">
+                            <span class="crop-check-icon hidden absolute top-2 right-2 w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold">✓</span>
+                            <div class="text-3xl">🟡</div>
+                            <h4 class="font-black text-slate-900 text-sm" data-i18n="crop_mustard">सरसों (Mustard)</h4>
+                            <span class="inline-block px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-black">₹5,950/Qtl</span>
+                        </div>
+
+                        <!-- Paddy Card -->
+                        <div id="crop-card-paddy" onclick="selectCropVisual('Paddy Common (धान सामान्य)', 2300)" class="crop-visual-card cursor-pointer p-4 rounded-2xl border-2 border-slate-200 bg-white shadow-sm transition-all hover:scale-105 text-center space-y-1 relative">
+                            <span class="crop-check-icon hidden absolute top-2 right-2 w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold">✓</span>
+                            <div class="text-3xl">🌾</div>
+                            <h4 class="font-black text-slate-900 text-sm" data-i18n="crop_paddy">धान (Paddy)</h4>
+                            <span class="inline-block px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-black">₹2,300/Qtl</span>
+                        </div>
+
+                        <!-- Soybean Card -->
+                        <div id="crop-card-soybean" onclick="selectCropVisual('Soybean (सोयाबीन)', 4892)" class="crop-visual-card cursor-pointer p-4 rounded-2xl border-2 border-slate-200 bg-white shadow-sm transition-all hover:scale-105 text-center space-y-1 relative">
+                            <span class="crop-check-icon hidden absolute top-2 right-2 w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold">✓</span>
+                            <div class="text-3xl">🟤</div>
+                            <h4 class="font-black text-slate-900 text-sm" data-i18n="crop_soybean">सोयाबीन (Soybean)</h4>
+                            <span class="inline-block px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-black">₹4,892/Qtl</span>
+                        </div>
+
+                        <!-- Maize Card -->
+                        <div id="crop-card-maize" onclick="selectCropVisual('Maize (मक्का)', 2225)" class="crop-visual-card cursor-pointer p-4 rounded-2xl border-2 border-slate-200 bg-white shadow-sm transition-all hover:scale-105 text-center space-y-1 relative">
+                            <span class="crop-check-icon hidden absolute top-2 right-2 w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-bold">✓</span>
+                            <div class="text-3xl">🌽</div>
+                            <h4 class="font-black text-slate-900 text-sm" data-i18n="crop_maize">मक्का (Maize)</h4>
+                            <span class="inline-block px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 text-[11px] font-black">₹2,225/Qtl</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quantity Stepper & Quick-Pick Chips -->
+                <div class="bg-slate-50 p-4 sm:p-6 rounded-2xl border border-slate-200 space-y-3">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                            <label class="block text-xs font-extrabold text-slate-800" data-i18n="qty_label">
+                                ⚖️ अनुमानित फसल मात्रा - क्विंटल में (Quantity in Quintals) *
+                            </label>
+                            <p class="text-[11px] text-slate-500">1 क्विंटल = 100 किलोग्राम</p>
+                        </div>
+                        
+                        <!-- Stepper +/- Buttons -->
+                        <div class="flex items-center space-x-2">
+                            <button type="button" onclick="adjustQuantity(-10)" class="w-10 h-10 rounded-2xl bg-white border-2 border-slate-300 text-slate-800 font-black text-lg hover:bg-slate-100 active:scale-95 shadow-xs flex items-center justify-center">
+                                −
+                            </button>
+                            <input type="number" step="0.5" id="qty-input" min="1" class="w-24 px-3 py-2 rounded-2xl border-2 border-emerald-600 text-center font-black text-lg text-emerald-950 bg-white focus:outline-none" value="50.0" required />
+                            <button type="button" onclick="adjustQuantity(10)" class="w-10 h-10 rounded-2xl bg-white border-2 border-slate-300 text-slate-800 font-black text-lg hover:bg-slate-100 active:scale-95 shadow-xs flex items-center justify-center">
+                                +
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Quick Pick Chips -->
+                    <div class="flex flex-wrap items-center gap-2 pt-2">
+                        <span class="text-xs font-bold text-slate-500 mr-1">त्वरित चुनें:</span>
+                        <button type="button" data-qty="25" onclick="adjustQuantity(25, true)" class="qty-chip-btn px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-700 hover:bg-emerald-50 border border-slate-200 transition-all">25 क्विंटल</button>
+                        <button type="button" data-qty="50" onclick="adjustQuantity(50, true)" class="qty-chip-btn px-4 py-2 rounded-xl text-xs font-black bg-emerald-600 text-white shadow-sm border border-emerald-600 transition-all">50 क्विंटल</button>
+                        <button type="button" data-qty="75" onclick="adjustQuantity(75, true)" class="qty-chip-btn px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-700 hover:bg-emerald-50 border border-slate-200 transition-all">75 क्विंटल</button>
+                        <button type="button" data-qty="100" onclick="adjustQuantity(100, true)" class="qty-chip-btn px-4 py-2 rounded-xl text-xs font-bold bg-white text-slate-700 hover:bg-emerald-50 border border-slate-200 transition-all">100 क्विंटल</button>
+                    </div>
+                </div>
+
+                <!-- Visual Vehicle Selector -->
+                <div>
+                    <label class="block text-xs font-extrabold text-slate-800 mb-2" data-i18n="vehicle_label">🚜 वाहन का प्रकार चुनें (Transport Vehicle) *</label>
+                    <select id="vehicle-select" class="hidden">
+                        <option value="Tractor Trolley (ट्रैक्टर ट्रॉली)">Tractor Trolley (ट्रैक्टर ट्रॉली)</option>
+                        <option value="Large Tractor (बड़ा ट्रैक्टर - 2 ट्रॉली)">Large Tractor (बड़ा ट्रैक्टर - 2 ट्रॉली)</option>
+                        <option value="Mini Truck / Pickup (छोटा हाथी / पिकअप)">Mini Truck / Pickup (छोटा हाथी / पिकअप)</option>
+                        <option value="Commercial Truck (बड़ा ट्रक)">Commercial Truck (बड़ा ट्रक)</option>
+                        <option value="Bullock Cart / Jugad (बैलगाड़ी / जुगाड़)">Bullock Cart / Jugad (बैलगाड़ी / जुगाड़)</option>
+                    </select>
+
+                    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2.5">
+                        <div id="vehicle-card-tractor" onclick="selectVehicleVisual('Tractor Trolley (ट्रैक्टर ट्रॉली)', 'ट्रैक्टर ट्रॉली')" class="vehicle-visual-card cursor-pointer p-3 rounded-2xl border-2 border-emerald-600 bg-emerald-50 shadow-sm text-center space-y-1 hover:scale-105 transition-all">
+                            <span class="text-2xl">🚜</span>
+                            <p class="text-xs font-black text-slate-900">ट्रैक्टर ट्रॉली</p>
+                        </div>
+
+                        <div id="vehicle-card-large" onclick="selectVehicleVisual('Large Tractor (बड़ा ट्रैक्टर - 2 ट्रॉली)', 'बड़ा ट्रैक्टर')" class="vehicle-visual-card cursor-pointer p-3 rounded-2xl border-2 border-slate-200 bg-white shadow-sm text-center space-y-1 hover:scale-105 transition-all">
+                            <span class="text-2xl">🚜🚜</span>
+                            <p class="text-xs font-black text-slate-900">बड़ा ट्रैक्टर</p>
+                        </div>
+
+                        <div id="vehicle-card-mini" onclick="selectVehicleVisual('Mini Truck / Pickup (छोटा हाथी / पिकअप)', 'पिकअप या छोटा हाथी')" class="vehicle-visual-card cursor-pointer p-3 rounded-2xl border-2 border-slate-200 bg-white shadow-sm text-center space-y-1 hover:scale-105 transition-all">
+                            <span class="text-2xl">🛻</span>
+                            <p class="text-xs font-black text-slate-900">छोटा हाथी / पिकअप</p>
+                        </div>
+
+                        <div id="vehicle-card-commercial" onclick="selectVehicleVisual('Commercial Truck (बड़ा ट्रक)', 'बड़ा ट्रक')" class="vehicle-visual-card cursor-pointer p-3 rounded-2xl border-2 border-slate-200 bg-white shadow-sm text-center space-y-1 hover:scale-105 transition-all">
+                            <span class="text-2xl">🚛</span>
+                            <p class="text-xs font-black text-slate-900">बड़ा ट्रक</p>
+                        </div>
+
+                        <div id="vehicle-card-bullock" onclick="selectVehicleVisual('Bullock Cart / Jugad (बैलगाड़ी / जुगाड़)', 'बैलगाड़ी या जुगाड़')" class="vehicle-visual-card cursor-pointer p-3 rounded-2xl border-2 border-slate-200 bg-white shadow-sm text-center space-y-1 hover:scale-105 transition-all">
+                            <span class="text-2xl">🐂</span>
+                            <p class="text-xs font-black text-slate-900">बैलगाड़ी / जुगाड़</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-3">
+                        <label class="block text-xs font-extrabold text-slate-700 mb-1">गाड़ी नंबर (Vehicle Number - Optional)</label>
+                        <input type="text" id="vehicle-num" class="w-full px-4 py-2.5 rounded-2xl border border-slate-300 text-sm font-mono font-bold text-slate-900" placeholder="उदा. HR-05-AE-4421 (वैकल्पिक)" value="" />
+                    </div>
+
+                    <!-- Kisan Sawaari: Shared Trolley Freight Pooling -->
+                    <div class="mt-3 p-3.5 bg-amber-50/80 border-2 border-amber-300 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 text-xs">
+                        <div class="flex items-center space-x-3 text-amber-950 font-bold text-center sm:text-left">
+                            <span class="text-2xl">🤝</span>
+                            <div>
+                                <p class="text-xs font-extrabold text-amber-950 flex items-center justify-center sm:justify-start space-x-1.5">
+                                    <span>किसान सवारी (Kisan Sawaari) • किराया सांझा पूलिंग</span>
+                                    <span class="bg-amber-500 text-slate-950 text-[9px] font-black px-1.5 py-0.2 rounded-full">SAVE ₹1,200</span>
+                                </p>
+                                <p class="text-[11px] text-amber-900 font-medium mt-0.5">
+                                    तरावड़ी के 2 अन्य किसान इसी दिन करनाल मंडी जा रहे हैं। सांझा ट्रॉली से 66% भाड़ा बचाएं।
+                                </p>
+                            </div>
+                        </div>
+                        <button type="button" onclick="toggleFreightPooling()" id="pooling-toggle-btn" class="px-3.5 py-1.5 bg-amber-500 hover:bg-amber-600 text-slate-950 text-xs font-black rounded-xl shadow-xs transition-transform active:scale-95 whitespace-nowrap">
+                            ✓ सांझा ट्रॉली सक्रिय करें
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Big High-Contrast MSP Payout Guarantee Card -->
+                <div class="bg-gradient-to-r from-emerald-500/15 via-emerald-500/10 to-teal-500/15 border-2 border-emerald-500 rounded-3xl p-5 sm:p-6 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+                    <div class="space-y-1 text-center sm:text-left">
+                        <div class="flex items-center justify-center sm:justify-start space-x-1.5 text-emerald-900 font-black text-sm">
+                            <span>💰</span>
+                            <span data-i18n="assured_payout_title">गारंटीड सरकारी MSP भुगतान (Assured Payment)</span>
+                        </div>
+                        <p class="text-xs text-emerald-800 font-medium">
+                            <span data-i18n="assured_payout_sub">मात्रा × सरकारी समर्थन मूल्य (2026 दर) • सीधे बैंक खाते में DBT ट्रांसफर</span>
+                        </p>
+                        <button type="button" onclick="speakSectionHelp('payout')" class="inline-flex items-center space-x-1 text-[11px] text-emerald-800 font-bold bg-white px-3 py-1 rounded-full border border-emerald-300 shadow-xs">
+                            <span>🔊</span>
+                            <span>यह राशि आवाज़ में सुनें</span>
+                        </button>
+                    </div>
+                    <div class="text-center sm:text-right bg-white px-5 py-3 rounded-2xl border border-emerald-300 shadow-sm">
+                        <p class="text-xs text-slate-500 font-bold">सरकारी दर: <b id="msp-rate-val" class="text-slate-800">₹2,425</b> / क्विंटल</p>
+                        <p id="est-val-display" class="text-3xl font-black text-emerald-700 tracking-tight">₹1,21,250</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- STEP 3: Mandi & Preferred Time Slot -->
+            <!-- ========================================== -->
+            <div class="space-y-4">
+                <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                    <div class="flex items-center space-x-3">
+                        <span class="w-8 h-8 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-black text-sm shadow-xs">३</span>
+                        <div>
+                            <h3 class="font-black text-slate-900 text-base" data-i18n="step_3_title">मंडी और समय चुनें (Select Mandi & Time)</h3>
+                            <p class="text-[11px] text-slate-500" data-i18n="step_3_sub">उपार्जन केंद्र एवं पहुंचने का स्लॉट</p>
+                        </div>
+                    </div>
+                    <button type="button" onclick="speakSectionHelp('slot')" class="text-xs text-emerald-700 bg-emerald-50 hover:bg-emerald-100 font-bold px-3 py-1.5 rounded-xl border border-emerald-200 flex items-center space-x-1">
+                        <span>🔊</span>
+                        <span>सुनें</span>
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-extrabold text-slate-800 mb-1">
+                            <span data-i18n="mandi_center_label">🏛️ उपार्जन अनाज मंडी (Procurement Mandi) *</span>
+                        </label>
+                        <select id="center-select" class="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 text-sm font-bold text-slate-900 bg-white focus:border-emerald-600 focus:ring-4 focus:ring-emerald-100 focus:outline-none">
+                            {% for c in centers %}
+                            <option value="{{ c.id }}">{{ c.name }} ({{ c.district }}) — {{ c.congestion_status }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-extrabold text-slate-800 mb-1">
+                            <span data-i18n="arrival_slot_label">⏰ पहुंचने का समय स्लॉट (Arrival Time) *</span>
+                        </label>
+                        <select id="slot-select" class="w-full px-4 py-3 rounded-2xl border-2 border-slate-200 text-sm font-bold text-slate-900 bg-white focus:border-emerald-600 focus:ring-4 focus:ring-emerald-100 focus:outline-none">
+                            <option value="07:00 AM - 09:00 AM">🟢 सुबह 07:00 - 09:00 (ग्रीन कॉरिडोर • &lt;20 मिनट त्वरित तौल)</option>
+                            <option value="09:00 AM - 11:00 AM">🌅 सुबह 09:00 - 11:00 (मानक स्लॉट)</option>
+                            <option value="11:00 AM - 01:00 PM">☀️ दोपहर 11:00 - 01:00</option>
+                            <option value="02:00 PM - 04:00 PM">🌤️ दोपहर 02:00 - 04:00</option>
+                            <option value="04:00 PM - 06:00 PM">🌇 शाम 04:00 - 06:00</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========================================== -->
+            <!-- SUBMIT BUTTON (Giant, Unmissable & Green) -->
+            <!-- ========================================== -->
+            <div class="pt-6 border-t-2 border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center space-x-2 text-xs text-slate-500 text-center sm:text-left">
+                    <span class="text-xl">🔒</span>
+                    <p>टोकन बनते ही आपके मोबाइल पर तुरंत SMS संदेश भेजा जाएगा।</p>
+                </div>
+
+                <button type="submit" id="submit-book-btn" class="w-full sm:w-auto px-10 py-4 bg-emerald-600 hover:bg-emerald-700 active:scale-98 text-white rounded-2xl text-base font-black shadow-xl hover:shadow-2xl transition-all flex items-center justify-center space-x-2.5">
+                    <span class="text-xl">✨</span>
+                    <span>टोकन बुक करें (Generate Token)</span>
+                </button>
+            </div>
+
+        </form>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="/static/js/farmer.js"></script>
+<script>
+    const cropsData = {{ crops | tojson }};
+    setupBookingCalculator(cropsData);
+</script>
+{% endblock %}

@@ -1,0 +1,400 @@
+{% extends "base.html" %}
+
+{% block title %}Free Kisan AI Mandi Price & Profit Advisor | AnnaSetu{% endblock %}
+
+{% block content %}
+<div class="space-y-8 max-w-6xl mx-auto">
+
+    <!-- Header Banner -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/80 pb-5">
+        <div>
+            <div class="flex items-center space-x-2 text-xs font-bold text-emerald-800 uppercase tracking-wider mb-1">
+                <span class="px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-900 font-extrabold text-[10px]">✨ 100% FREE AI TOOL</span>
+                <span>INTELLIGENT MANDI PROFIT ADVISOR</span>
+            </div>
+            <h1 class="text-3xl font-black text-slate-900 tracking-tight flex items-center space-x-2">
+                <span>🤖</span>
+                <span>Kisan AI Mandi Price & Profit Advisor</span>
+            </h1>
+            <p class="text-xs text-slate-500 mt-1">
+                एआई द्वारा जानें किस मंडी में मिलेगा सबसे ज्यादा भाव और डीजल खर्च घटाकर असली शुद्ध मुनाफा
+            </p>
+        </div>
+
+        <div class="flex items-center space-x-3">
+            <a href="/centers" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-2xl text-xs font-bold transition-all flex items-center space-x-1.5">
+                <span>📍</span>
+                <span>All Mandi Rates</span>
+            </a>
+            <a href="/sales" class="px-4 py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-2xl text-xs font-bold transition-all flex items-center space-x-1.5">
+                <span>📦</span>
+                <span>My Earnings</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- AI Inputs & Parameter Card -->
+    <div class="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-7 shadow-xs space-y-5">
+        <div class="flex items-center space-x-2 border-b border-slate-100 pb-3">
+            <span class="text-lg">⚙️</span>
+            <h3 class="font-black text-slate-900 text-base">Enter Your Harvest & Transport Details</h3>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 text-xs">
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Select Crop (फसल) *</label>
+                <select id="ai-crop-select" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 font-bold text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none cursor-pointer">
+                    <option value="Wheat (गेहूं)">Wheat (गेहूं) — Base MSP ₹2,425</option>
+                    <option value="Mustard / Rapeseed (सरसों)">Mustard / Rapeseed (सरसों) — Base MSP ₹5,950</option>
+                    <option value="Paddy Grade A (धान ग्रेड-ए)">Paddy Grade A (धान) — Base MSP ₹2,320</option>
+                    <option value="Soybean (सोयाबीन)">Soybean (सोयाबीन) — Base MSP ₹4,892</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Harvest Quantity (मात्रा - क्विंटल) *</label>
+                <input type="number" id="ai-qty-input" value="50.0" step="1" min="1" max="1000" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 font-black text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none" />
+            </div>
+
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Your Village / Location (गाँव) *</label>
+                <input type="text" id="ai-village-input" value="Nilokheri, Karnal" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-xs font-bold text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none" />
+            </div>
+
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Transport Vehicle (वाहन) *</label>
+                <select id="ai-vehicle-select" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 font-bold text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none cursor-pointer">
+                    <option value="Tractor Trolley (ट्रैक्टर ट्रॉली)">Tractor Trolley (ट्रैक्टर ट्रॉली)</option>
+                    <option value="Mini Truck / Pickup (छोटा हाथी / पिकअप)">Mini Truck / Pickup (पिकअप)</option>
+                    <option value="Large Tractor (बड़ा ट्रैक्टर - 2 ट्रॉली)">Large Tractor (2 ट्रॉली)</option>
+                    <option value="Commercial Truck (बड़ा ट्रक)">Commercial Heavy Truck</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="pt-2 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p class="text-[11px] text-slate-400">
+                ⚡ AI analyzes real-time spot prices, diesel fuel rates, and road distance to find your highest net profit.
+            </p>
+            <button onclick="runAIOptimization()" id="ai-calc-btn" class="w-full sm:w-auto px-8 py-3.5 bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white rounded-2xl font-black text-xs shadow-lg hover:shadow-xl transition-all flex items-center justify-center space-x-2">
+                <span>✨ Optimize Mandi Profit with AI</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- 🏆 Glowing AI Best Recommendation Card -->
+    <div id="ai-top-result-card" class="bg-gradient-to-br from-[#105a33] via-[#0d4c2b] to-[#072e18] rounded-3xl p-6 sm:p-9 text-white shadow-2xl shadow-emerald-950/30 relative overflow-hidden space-y-6">
+        
+        <!-- Header Ribbon -->
+        <div class="flex flex-wrap items-center justify-between gap-2">
+            <div class="flex items-center space-x-2">
+                <span class="px-3 py-1 rounded-full bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider shadow-sm">
+                    🏆 #1 AI OPTIMAL PICK
+                </span>
+                <span class="text-xs text-emerald-200 font-medium">Highest In-Hand Net Profit</span>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button onclick="speakAIRecommendation()" class="px-3.5 py-1.5 bg-white/10 hover:bg-white/20 border border-white/25 text-white rounded-full text-xs font-bold flex items-center space-x-1.5 backdrop-blur-md transition-all">
+                    <span>🔊</span>
+                    <span>बोलकर सुनें (Voice)</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Mandi Main Info & Rates Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center">
+            
+            <div class="lg:col-span-2 space-y-2">
+                <div class="flex items-center space-x-2">
+                    <span class="px-2.5 py-0.5 rounded-md bg-amber-400/90 text-slate-950 text-[10px] font-black uppercase">Private Corporate Hub</span>
+                    <span id="ai-rec-distance" class="text-xs text-emerald-200">📍 3.8 km (8 Mins drive)</span>
+                </div>
+                <h2 id="ai-rec-name" class="text-3xl sm:text-4xl font-black tracking-tight text-white">
+                    ITC e-Choupal Rural Hub
+                </h2>
+                <p id="ai-rec-operator" class="text-xs text-emerald-200/90">
+                    Karnal-Kaithal Highway • ITC Agri-Business Division
+                </p>
+                <p id="ai-rec-facility" class="text-xs text-emerald-100 pt-1">
+                    🌟 Direct electronic weighing, 0% labor cut, Instant UPI transfer within 30 minutes
+                </p>
+            </div>
+
+            <!-- Financial Profit Metrics Pill -->
+            <div class="bg-white/10 border border-white/20 p-5 rounded-3xl backdrop-blur-md space-y-3">
+                <div class="flex items-center justify-between text-xs">
+                    <span class="text-emerald-200">Buying Rate:</span>
+                    <span id="ai-rec-rate" class="font-mono font-black text-amber-300 text-lg">₹2,510/Qtl</span>
+                </div>
+                <div class="flex items-center justify-between text-xs">
+                    <span class="text-emerald-200">Gross Harvest Value:</span>
+                    <span id="ai-rec-gross" class="font-mono font-bold text-white">₹1,25,500</span>
+                </div>
+                <div class="flex items-center justify-between text-xs">
+                    <span class="text-emerald-200">Est. Fuel Cost:</span>
+                    <span id="ai-rec-fuel" class="font-mono font-bold text-rose-300">-₹106 (Round Trip)</span>
+                </div>
+                <div class="pt-2 border-t border-white/20 flex items-center justify-between">
+                    <span class="text-xs font-extrabold text-emerald-200">Net Take-Home Profit:</span>
+                    <span id="ai-rec-net" class="font-mono font-black text-2xl text-emerald-300">₹1,25,394</span>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- AI Reasoning Explanation Box -->
+        <div class="p-5 bg-black/25 rounded-2xl border border-white/10 space-y-2">
+            <div class="flex items-center space-x-2 text-amber-300 text-xs font-bold">
+                <span>💡</span>
+                <span>AI Profit Analysis & Reasoning (एआई विश्लेषण):</span>
+            </div>
+            <p id="ai-rec-explanation-hi" class="text-xs text-emerald-50 leading-relaxed font-medium">
+                किसान भाई, आपकी 50 क्विंटल गेहूं के लिए एआई की सबसे बेहतरीन सिफारिश ITC e-Choupal है। यहाँ आपको ₹2,510 प्रति क्विंटल का भाव मिलेगा। डीजल खर्च घटाने के बाद भी आपको कुल ₹1,25,394 का शुद्ध मुनाफा होगा, जो सामान्य सरकारी मंडी से ₹4,144 रुपये ज्यादा है!
+            </p>
+        </div>
+
+        <!-- Action Footer -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-1">
+            <div class="flex items-center space-x-2 text-xs text-emerald-200">
+                <span>🛡️</span>
+                <span>Official Price Guarantee • Zero Hidden Deductions</span>
+            </div>
+            <a href="/book" class="px-8 py-3.5 bg-amber-400 hover:bg-amber-500 text-slate-950 font-black text-xs rounded-2xl shadow-xl transition-all flex items-center justify-center space-x-2">
+                <span>Book Slot at this Mandi</span>
+                <span>&rarr;</span>
+            </a>
+        </div>
+
+    </div>
+
+    <!-- 📊 Side-by-Side Comparison Matrix Table of All Mandis -->
+    <div class="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-xs space-y-5">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+            <div>
+                <h3 class="text-lg font-black text-slate-900 flex items-center space-x-2">
+                    <span>📊</span>
+                    <span>All Mandis Net In-Hand Profit Comparison</span>
+                </h3>
+                <p class="text-xs text-slate-500 mt-0.5">डीजल खर्च घटाने के बाद सभी मंडियों का शुद्ध मुनाफा</p>
+            </div>
+            <span class="text-xs text-slate-400 font-mono">Ranked by Net Profit</span>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead>
+                    <tr class="text-[11px] text-slate-400 uppercase border-b border-slate-100">
+                        <th class="py-3 px-3">Rank & Mandi</th>
+                        <th class="py-3 px-3">Type</th>
+                        <th class="py-3 px-3">Distance & Time</th>
+                        <th class="py-3 px-3">Buying Rate</th>
+                        <th class="py-3 px-3">Gross Total</th>
+                        <th class="py-3 px-3">Fuel Cost</th>
+                        <th class="py-3 px-3">Net In-Hand Profit</th>
+                        <th class="py-3 px-3 text-right">Advantage vs APMC</th>
+                    </tr>
+                </thead>
+                <tbody id="ai-comparison-tbody" class="divide-y divide-slate-100">
+                    <!-- Populated via JavaScript dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 💬 Interactive AI Conversational Assistant -->
+    <div class="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-xs space-y-6">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center text-xl shadow-xs">
+                    💬
+                </div>
+                <div>
+                    <h3 class="font-black text-slate-900 text-base">Ask Kisan AI Any Mandi Question</h3>
+                    <p class="text-xs text-slate-500">मंडी भाव, नमी के नियम व भुगतान संबंधित प्रश्न पूछें</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Prompt Chips -->
+        <div class="flex flex-wrap gap-2 text-xs">
+            <button onclick="askPresetQuery('Where can I sell Wheat for highest price?')" class="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-emerald-100 text-slate-700 hover:text-emerald-900 transition-colors font-medium">
+                🌾 गेहूं का सबसे अच्छा भाव कहाँ है?
+            </button>
+            <button onclick="askPresetQuery('Which mandi gives maximum rate for Mustard?')" class="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-amber-100 text-slate-700 hover:text-amber-900 transition-colors font-medium">
+                🌻 सरसों का अधिकतम भाव कौन सी मंडी दे रही है?
+            </button>
+            <button onclick="askPresetQuery('Which mandi is nearest to my location?')" class="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-blue-100 text-slate-700 hover:text-blue-900 transition-colors font-medium">
+                📍 मेरे गाँव से सबसे नज़दीक कौन सी मंडी है?
+            </button>
+            <button onclick="askPresetQuery('How fast is the payment transferred?')" class="px-3.5 py-1.5 rounded-xl bg-slate-100 hover:bg-purple-100 text-slate-700 hover:text-purple-900 transition-colors font-medium">
+                💳 भुगतान कितने समय में बैंक खाते में आता है?
+            </button>
+        </div>
+
+        <!-- Input Box -->
+        <div class="flex items-center space-x-3">
+            <input type="text" id="ai-chat-input" placeholder="यहाँ अपना सवाल पूछें..." class="w-full px-4 py-3 rounded-2xl border border-slate-300 text-xs sm:text-sm font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none" />
+            <button onclick="sendAIChatQuery()" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl font-bold text-xs shadow-md transition-all flex-shrink-0">
+                Ask AI ✨
+            </button>
+        </div>
+
+        <!-- AI Chat Response Box -->
+        <div id="ai-chat-response-card" class="p-5 bg-emerald-50 border border-emerald-200/80 rounded-2xl text-xs space-y-2 hidden">
+            <div class="flex items-center space-x-2 font-bold text-emerald-900">
+                <span>🤖</span>
+                <span>Kisan AI Assistant:</span>
+            </div>
+            <p id="ai-chat-response-text" class="text-emerald-900 font-medium leading-relaxed">-</p>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    let currentAISpeechHindi = "";
+
+    async function runAIOptimization() {
+        const crop = document.getElementById("ai-crop-select").value;
+        const qty = parseFloat(document.getElementById("ai-qty-input").value) || 50.0;
+        const village = document.getElementById("ai-village-input").value;
+        const vehicle = document.getElementById("ai-vehicle-select").value;
+
+        const btn = document.getElementById("ai-calc-btn");
+        if (btn) {
+            btn.innerHTML = `<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white inline" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path></svg> Analyzing Market with AI...`;
+        }
+
+        try {
+            const res = await fetch("/api/ai/recommend-mandi", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    crop_name: crop,
+                    quantity_qtl: qty,
+                    village: village,
+                    vehicle_type: vehicle
+                })
+            });
+
+            const data = await res.json();
+            if (data.success) {
+                renderAIResults(data);
+            }
+        } catch (err) {
+            console.error("AI Advisor error:", err);
+            showToast("Failed to optimize with AI", "error");
+        } finally {
+            if (btn) {
+                btn.innerHTML = `<span>✨ Optimize Mandi Profit with AI</span>`;
+            }
+        }
+    }
+
+    function renderAIResults(data) {
+        const top = data.top_ai_pick;
+        currentAISpeechHindi = data.ai_speech_hi;
+
+        document.getElementById("ai-rec-name").innerText = top.center_name;
+        document.getElementById("ai-rec-operator").innerText = `${top.operator_name} • ${top.location}`;
+        document.getElementById("ai-rec-distance").innerText = `📍 ${top.distance_km} km (~${top.travel_time_mins} Mins drive)`;
+        document.getElementById("ai-rec-rate").innerText = `₹${top.buying_price_per_qtl}/Qtl`;
+        document.getElementById("ai-rec-gross").innerText = `₹${top.gross_payout_inr.toLocaleString("en-IN")}`;
+        document.getElementById("ai-rec-fuel").innerText = `-₹${top.transport_fuel_cost_inr.toLocaleString("en-IN")} (Round Trip)`;
+        document.getElementById("ai-rec-net").innerText = `₹${top.net_in_hand_profit_inr.toLocaleString("en-IN")}`;
+        document.getElementById("ai-rec-explanation-hi").innerText = data.ai_speech_hi;
+
+        // Render table
+        const tbody = document.getElementById("ai-comparison-tbody");
+        if (!tbody) return;
+        tbody.innerHTML = "";
+
+        data.all_ranked_mandis.forEach((m, idx) => {
+            const isPvt = m.mandi_type === "PRIVATE_CORPORATE";
+            const typeBadge = isPvt
+                ? `<span class="px-2 py-0.5 rounded bg-amber-100 text-amber-900 font-extrabold text-[10px]">🏢 Private</span>`
+                : `<span class="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-extrabold text-[10px]">🏛️ Govt APMC</span>`;
+
+            const advBadge = m.net_advantage_over_apmc_inr > 0
+                ? `<span class="text-emerald-700 font-extrabold">+₹${m.net_advantage_over_apmc_inr.toLocaleString("en-IN")} Higher</span>`
+                : `<span class="text-slate-400 font-medium">Standard MSP</span>`;
+
+            const rankBadge = idx === 0
+                ? `<span class="px-2 py-0.5 rounded-full bg-amber-400 text-slate-950 font-black text-[10px]">#1 Top AI</span>`
+                : `<span class="text-slate-400 font-mono font-bold">#${idx + 1}</span>`;
+
+            const row = document.createElement("tr");
+            row.className = idx === 0 ? "bg-emerald-50/70 font-bold" : "hover:bg-slate-50 transition-colors";
+            row.innerHTML = `
+                <td class="py-3 px-3">
+                    <div class="flex items-center space-x-2">
+                        ${rankBadge}
+                        <span class="font-bold text-slate-900">${m.center_name}</span>
+                    </div>
+                </td>
+                <td class="py-3 px-3">${typeBadge}</td>
+                <td class="py-3 px-3 text-slate-600">${m.distance_km} km (${m.travel_time_mins}m)</td>
+                <td class="py-3 px-3 font-mono font-bold text-slate-900">₹${m.buying_price_per_qtl}/Qtl</td>
+                <td class="py-3 px-3 font-mono text-slate-800">₹${m.gross_payout_inr.toLocaleString("en-IN")}</td>
+                <td class="py-3 px-3 font-mono text-rose-600">-₹${m.transport_fuel_cost_inr.toLocaleString("en-IN")}</td>
+                <td class="py-3 px-3 font-mono font-black text-emerald-900 text-sm">₹${m.net_in_hand_profit_inr.toLocaleString("en-IN")}</td>
+                <td class="py-3 px-3 text-right font-mono">${advBadge}</td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    function speakAIRecommendation() {
+        if (!currentAISpeechHindi) return;
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.cancel();
+            const utter = new SpeechSynthesisUtterance(currentAISpeechHindi);
+            utter.lang = "hi-IN";
+            utter.rate = 0.95;
+            window.speechSynthesis.speak(utter);
+            showToast("🔊 Speaking AI Recommendation in Hindi...", "info");
+        } else {
+            showToast("Speech synthesis not supported on this browser", "warning");
+        }
+    }
+
+    async function sendAIChatQuery() {
+        const input = document.getElementById("ai-chat-input");
+        const query = input.value.trim();
+        if (!query) return;
+
+        try {
+            const res = await fetch("/api/ai/ask-query", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ query: query, language: "hi" })
+            });
+            const data = await res.json();
+            if (data.success) {
+                const card = document.getElementById("ai-chat-response-card");
+                const text = document.getElementById("ai-chat-response-text");
+                text.innerText = data.reply_hi;
+                card.classList.remove("hidden");
+
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.cancel();
+                    const utter = new SpeechSynthesisUtterance(data.reply_hi);
+                    utter.lang = "hi-IN";
+                    window.speechSynthesis.speak(utter);
+                }
+            }
+        } catch (err) {
+            console.error("AI Chat error:", err);
+        }
+    }
+
+    function askPresetQuery(q) {
+        document.getElementById("ai-chat-input").value = q;
+        sendAIChatQuery();
+    }
+
+    document.addEventListener("DOMContentLoaded", runAIOptimization);
+</script>
+{% endblock %}

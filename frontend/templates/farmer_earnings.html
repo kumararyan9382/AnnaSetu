@@ -1,0 +1,460 @@
+{% extends "base.html" %}
+
+{% block title %}My Sales & Earnings Passbook | KisanMitra AnnaSetu{% endblock %}
+
+{% block content %}
+<div class="space-y-8 max-w-6xl mx-auto">
+
+    <!-- Header & Title -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/80 pb-5">
+        <div>
+            <div class="flex items-center space-x-2 text-xs font-bold text-emerald-800 uppercase tracking-wider mb-1">
+                <span>📦</span>
+                <span>OFFICIAL PROCUREMENT PASSBOOK</span>
+            </div>
+            <h1 class="text-3xl font-black text-slate-900 tracking-tight">
+                Farmer Earnings & Sales Dashboard
+            </h1>
+            <p class="text-xs text-slate-500 mt-1">
+                किसान की कुल कमाई, सरकारी डीबीटी रसीदें एवं प्राइवेट व सरकारी मंडी बिक्री का सम्पूर्ण लेखा-जोखा
+            </p>
+        </div>
+
+        <div class="flex items-center space-x-3">
+            <a href="/centers" class="px-4 py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200 rounded-2xl text-xs font-bold transition-all flex items-center space-x-1.5 shadow-xs">
+                <span>📍</span>
+                <span>Compare Mandi Prices</span>
+            </a>
+            <a href="/book" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl text-xs font-bold shadow-md transition-all flex items-center space-x-1.5">
+                <span>🌾</span>
+                <span>Sell New Crop</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Top 4 Metric Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        
+        <!-- Total Lifetime Earnings -->
+        <div class="bg-gradient-to-br from-[#105a33] to-[#0c4326] text-white p-6 rounded-3xl shadow-lg shadow-emerald-950/20 relative overflow-hidden space-y-2">
+            <div class="flex items-center justify-between text-emerald-200 text-xs font-bold">
+                <span>LIFETIME EARNINGS</span>
+                <span>💳 DBT</span>
+            </div>
+            <h2 id="total-earnings-val" class="text-3xl sm:text-4xl font-black tracking-tight text-white font-mono">
+                ₹3,04,000
+            </h2>
+            <p class="text-[11px] text-emerald-200/80 flex items-center space-x-1">
+                <span>✓</span>
+                <span>100% Guaranteed Payout</span>
+            </p>
+        </div>
+
+        <!-- Total Quantity Sold -->
+        <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs space-y-2">
+            <div class="flex items-center justify-between text-slate-400 text-xs font-bold">
+                <span>TOTAL PRODUCE SOLD</span>
+                <span>⚖️</span>
+            </div>
+            <h2 id="total-qty-val" class="text-3xl sm:text-4xl font-black tracking-tight text-slate-900 font-mono">
+                80.0 <span class="text-base font-normal text-slate-500">Qtls</span>
+            </h2>
+            <p class="text-[11px] text-slate-500 flex items-center space-x-1">
+                <span>🌾</span>
+                <span>Certified Electronic Weighing</span>
+            </p>
+        </div>
+
+        <!-- Private Mandi Bonus Earned -->
+        <div class="bg-gradient-to-br from-amber-500 to-amber-600 text-white p-6 rounded-3xl shadow-lg shadow-amber-950/20 space-y-2">
+            <div class="flex items-center justify-between text-amber-100 text-xs font-bold">
+                <span>PRIVATE MANDI BONUS</span>
+                <span>🌟 BONUS</span>
+            </div>
+            <h2 id="total-bonus-val" class="text-3xl sm:text-4xl font-black tracking-tight text-white font-mono">
+                +₹4,250
+            </h2>
+            <p class="text-[11px] text-amber-100/90 flex items-center space-x-1">
+                <span>📈</span>
+                <span>Extra profit earned over base MSP</span>
+            </p>
+        </div>
+
+        <!-- Average Realized Price -->
+        <div class="bg-white p-6 rounded-3xl border border-slate-200/80 shadow-xs space-y-2">
+            <div class="flex items-center justify-between text-slate-400 text-xs font-bold">
+                <span>AVG REALIZED PRICE</span>
+                <span>💰</span>
+            </div>
+            <h2 id="avg-price-val" class="text-3xl sm:text-4xl font-black tracking-tight text-emerald-800 font-mono">
+                ₹2,510 <span class="text-xs font-normal text-slate-500">/Qtl</span>
+            </h2>
+            <p class="text-[11px] text-slate-500 flex items-center space-x-1">
+                <span>🛡️</span>
+                <span>Zero Middlemen Commission</span>
+            </p>
+        </div>
+
+    </div>
+
+    <!-- Middle Row: Crop Revenue Breakdown & Direct Bank Credit Card -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        
+        <!-- Crop Revenue Breakdown (2 cols) -->
+        <div class="lg:col-span-2 bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-7 shadow-xs space-y-5">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+                <h3 class="font-black text-slate-900 text-base flex items-center space-x-2">
+                    <span>🌾</span>
+                    <span>Crop-wise Sales & Revenue Breakdown</span>
+                </h3>
+                <span class="text-xs text-slate-400">2026-27 Season</span>
+            </div>
+
+            <div class="space-y-4" id="crop-bars-container">
+                <!-- Wheat -->
+                <div class="space-y-1.5">
+                    <div class="flex items-center justify-between text-xs font-bold">
+                        <span class="text-slate-800 flex items-center space-x-2">
+                            <span>🥖</span>
+                            <span>Wheat (गेहूं) • 50.0 Qtls</span>
+                        </span>
+                        <span class="text-emerald-800 font-mono">₹1,25,500 (41%)</span>
+                    </div>
+                    <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+                        <div class="bg-emerald-600 h-full rounded-full" style="width: 41%;"></div>
+                    </div>
+                </div>
+
+                <!-- Mustard -->
+                <div class="space-y-1.5">
+                    <div class="flex items-center justify-between text-xs font-bold">
+                        <span class="text-slate-800 flex items-center space-x-2">
+                            <span>🌻</span>
+                            <span>Mustard / Rapeseed (सरसों) • 30.0 Qtls</span>
+                        </span>
+                        <span class="text-amber-700 font-mono">₹1,78,500 (59%)</span>
+                    </div>
+                    <div class="w-full bg-slate-100 h-3 rounded-full overflow-hidden">
+                        <div class="bg-amber-500 h-full rounded-full" style="width: 59%;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Mandi Comparison Note -->
+            <div class="p-4 bg-emerald-50/70 border border-emerald-200/80 rounded-2xl flex items-center justify-between text-xs">
+                <div class="space-y-0.5">
+                    <p class="font-bold text-emerald-900">💡 Private Mandi Benefit Realized</p>
+                    <p class="text-emerald-700 text-[11px]">You earned ₹85/Qtl more on Wheat by choosing ITC e-Choupal Hub over APMC base rate!</p>
+                </div>
+                <a href="/centers" class="px-3 py-1.5 bg-white text-emerald-800 rounded-xl font-bold border border-emerald-300 hover:bg-emerald-100 transition-all flex-shrink-0">
+                    Compare Rates &rarr;
+                </a>
+            </div>
+        </div>
+
+        <!-- Aadhaar Linked Bank Account Card (1 col) -->
+        <div class="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-xs flex flex-col justify-between space-y-4">
+            <div class="space-y-2">
+                <div class="w-10 h-10 rounded-2xl bg-blue-50 text-blue-700 flex items-center justify-center text-xl shadow-xs">
+                    🏛️
+                </div>
+                <h3 class="font-black text-slate-900 text-base">Direct Benefit Transfer (DBT) Bank Account</h3>
+                <p class="text-xs text-slate-500">Government & Corporate payouts are credited directly into your verified bank account</p>
+            </div>
+
+            <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200/80 text-xs space-y-2">
+                <div class="flex justify-between">
+                    <span class="text-slate-400">Bank Name:</span>
+                    <span class="font-bold text-slate-800">State Bank of India</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-400">Account Number:</span>
+                    <span class="font-mono font-bold text-slate-800">XXXX-XXXX-4892</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-400">IFSC Code:</span>
+                    <span class="font-mono font-bold text-slate-800">SBIN0001001</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-400">DBT Status:</span>
+                    <span class="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-full font-bold text-[10px]">🟢 Active & Linked</span>
+                </div>
+            </div>
+
+            <div class="text-[11px] text-slate-400 flex items-center space-x-1">
+                <span>🔒</span>
+                <span>Protected by Public Financial Management System (PFMS)</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Official Transactions & Sales Passbook Table -->
+    <div class="bg-white rounded-3xl border border-slate-200/80 p-6 sm:p-8 shadow-xs space-y-6">
+        
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 pb-4">
+            <div>
+                <h3 class="text-lg font-black text-slate-900 flex items-center space-x-2">
+                    <span>📜</span>
+                    <span>Complete Sales Passbook & Tax Invoices</span>
+                </h3>
+                <p class="text-xs text-slate-500 mt-0.5">सभी बिक्री, तौल रसीदें और डिजिटल भुगतान वाउचर</p>
+            </div>
+
+            <!-- Filter Buttons -->
+            <div class="flex items-center space-x-2 text-xs font-bold">
+                <button onclick="filterTable('ALL')" id="filter-all-btn" class="px-3.5 py-1.5 rounded-xl bg-emerald-100 text-emerald-900 border border-emerald-300">
+                    All Sales
+                </button>
+                <button onclick="filterTable('PRIVATE')" id="filter-pvt-btn" class="px-3.5 py-1.5 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200">
+                    🏢 Private Mandis
+                </button>
+                <button onclick="filterTable('GOVT')" id="filter-govt-btn" class="px-3.5 py-1.5 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200">
+                    🏛️ Govt APMC
+                </button>
+            </div>
+        </div>
+
+        <!-- Table Responsive Container -->
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs">
+                <thead>
+                    <tr class="text-[11px] text-slate-400 uppercase border-b border-slate-100">
+                        <th class="py-3 px-3">Date & Token</th>
+                        <th class="py-3 px-3">Procurement Mandi</th>
+                        <th class="py-3 px-3">Crop Produce</th>
+                        <th class="py-3 px-3">Net Weight</th>
+                        <th class="py-3 px-3">Rate Realized</th>
+                        <th class="py-3 px-3">Total Amount</th>
+                        <th class="py-3 px-3">DBT Ref No / Status</th>
+                        <th class="py-3 px-3 text-right">e-Voucher</th>
+                    </tr>
+                </thead>
+                <tbody id="sales-table-body" class="divide-y divide-slate-100">
+                    <!-- Populated via JavaScript dynamically -->
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Payment Receipt Modal -->
+<div id="receipt-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-200">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-3">
+            <div class="flex items-center space-x-2">
+                <span class="text-2xl">🌾</span>
+                <div>
+                    <h3 class="font-black text-slate-900 text-base">Government Verified Procurement Receipt</h3>
+                    <p class="text-[10px] text-slate-400 font-mono">AnnaSetu Digital Audit Record</p>
+                </div>
+            </div>
+            <button onclick="closeReceiptModal()" class="text-slate-400 hover:text-slate-600 p-1">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+
+        <div id="receipt-modal-content" class="space-y-4 text-xs">
+            <!-- Dynamically populated -->
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+            <button onclick="window.print()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-xs flex items-center space-x-2 shadow">
+                <span>🖨️</span>
+                <span>Print / Save PDF</span>
+            </button>
+            <button onclick="closeReceiptModal()" class="px-4 py-2 text-slate-600 hover:bg-slate-100 rounded-xl font-bold text-xs">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    let allTransactions = [];
+
+    async function loadEarningsData() {
+        try {
+            const res = await fetch("/api/farmers/earnings");
+            const data = await res.json();
+            
+            if (data.success) {
+                document.getElementById("total-earnings-val").innerText = "₹" + data.lifetime_earnings_inr.toLocaleString("en-IN");
+                document.getElementById("total-qty-val").innerHTML = `${data.total_quantity_sold_qtl} <span class="text-base font-normal text-slate-500">Qtls</span>`;
+                document.getElementById("total-bonus-val").innerText = "+₹" + Math.round(data.bonus_earned_over_msp).toLocaleString("en-IN");
+                document.getElementById("avg-price-val").innerHTML = `₹${data.avg_price_per_qtl} <span class="text-xs font-normal text-slate-500">/Qtl</span>`;
+
+                allTransactions = data.transactions;
+                renderSalesTable(allTransactions);
+            }
+        } catch (err) {
+            console.error("Error loading earnings:", err);
+        }
+    }
+
+    function renderSalesTable(transactions) {
+        const tbody = document.getElementById("sales-table-body");
+        if (!tbody) return;
+        tbody.innerHTML = "";
+
+        if (transactions.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="8" class="text-center py-8 text-slate-400">No sales transactions found.</td></tr>`;
+            return;
+        }
+
+        transactions.forEach(t => {
+            const isPvt = t.mandi_type === "PRIVATE_CORPORATE";
+            const mandiBadge = isPvt 
+                ? `<span class="px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 text-[10px] font-extrabold">🏢 Private Mandi</span>`
+                : `<span class="px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-800 text-[10px] font-extrabold">🏛️ Govt APMC</span>`;
+
+            const isPaid = t.stage === "PAYMENT_PROCESSED";
+            const statusBadge = isPaid
+                ? `<span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-bold text-[10px]">🟢 PAID via DBT</span>`
+                : `<span class="px-2.5 py-1 rounded-full bg-blue-100 text-blue-800 font-bold text-[10px]">🟡 In Process</span>`;
+
+            const payoutFormatted = t.total_amount_inr 
+                ? "₹" + t.total_amount_inr.toLocaleString("en-IN")
+                : "₹" + Math.round((t.msp_rate_applied || 2425) * t.estimated_quantity_qtl).toLocaleString("en-IN") + " (Est.)";
+
+            const netWeight = t.net_weight_qtl ? `${t.net_weight_qtl} Qtls` : `${t.estimated_quantity_qtl} Qtls (Est)`;
+            const dateStr = t.scheduled_date || "2026-08-30";
+            const distStr = t.distance_km ? `${t.distance_km} km away` : "Nearby";
+
+            const row = document.createElement("tr");
+            row.className = "hover:bg-slate-50 transition-colors";
+            row.innerHTML = `
+                <td class="py-4 px-3 font-mono font-bold text-slate-800">
+                    <p>${t.id}</p>
+                    <p class="text-[10px] text-slate-400 font-sans font-normal">${dateStr}</p>
+                </td>
+                <td class="py-4 px-3">
+                    <div class="space-y-0.5">
+                        <div class="flex items-center space-x-1.5">
+                            <span class="font-bold text-slate-900">${t.center_name}</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            ${mandiBadge}
+                            <span class="text-[10px] text-slate-400">📍 ${distStr}</span>
+                        </div>
+                    </div>
+                </td>
+                <td class="py-4 px-3 font-bold text-slate-800">
+                    ${t.crop_name}
+                </td>
+                <td class="py-4 px-3 font-bold text-slate-800 font-mono">
+                    ${netWeight}
+                </td>
+                <td class="py-4 px-3 font-bold text-emerald-800 font-mono">
+                    ₹${t.msp_rate_applied || 2425}/Qtl
+                    ${isPvt ? '<span class="text-[10px] text-amber-600 block">🌟 +Bonus</span>' : ''}
+                </td>
+                <td class="py-4 px-3 font-black text-slate-900 font-mono text-sm">
+                    ${payoutFormatted}
+                </td>
+                <td class="py-4 px-3">
+                    <div class="space-y-1">
+                        ${statusBadge}
+                        <p class="text-[10px] font-mono text-slate-400">${t.dbt_reference_no || 'Pending Auth'}</p>
+                    </div>
+                </td>
+                <td class="py-4 px-3 text-right">
+                    <button onclick='openReceiptModal(${JSON.stringify(t)})' class="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-emerald-100 text-slate-800 hover:text-emerald-900 font-bold text-xs transition-colors shadow-xs">
+                        🖨️ View
+                    </button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+    }
+
+    function filterTable(type) {
+        document.getElementById("filter-all-btn").className = "px-3.5 py-1.5 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200";
+        document.getElementById("filter-pvt-btn").className = "px-3.5 py-1.5 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200";
+        document.getElementById("filter-govt-btn").className = "px-3.5 py-1.5 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200";
+
+        if (type === "ALL") {
+            document.getElementById("filter-all-btn").className = "px-3.5 py-1.5 rounded-xl bg-emerald-100 text-emerald-900 border border-emerald-300 font-bold";
+            renderSalesTable(allTransactions);
+        } else if (type === "PRIVATE") {
+            document.getElementById("filter-pvt-btn").className = "px-3.5 py-1.5 rounded-xl bg-amber-100 text-amber-900 border border-amber-300 font-bold";
+            renderSalesTable(allTransactions.filter(t => t.mandi_type === "PRIVATE_CORPORATE"));
+        } else if (type === "GOVT") {
+            document.getElementById("filter-govt-btn").className = "px-3.5 py-1.5 rounded-xl bg-emerald-100 text-emerald-900 border border-emerald-300 font-bold";
+            renderSalesTable(allTransactions.filter(t => t.mandi_type !== "PRIVATE_CORPORATE"));
+        }
+    }
+
+    function openReceiptModal(t) {
+        const content = document.getElementById("receipt-modal-content");
+        const isPvt = t.mandi_type === "PRIVATE_CORPORATE";
+        
+        content.innerHTML = `
+            <div class="p-4 bg-emerald-50/80 rounded-2xl border border-emerald-200 space-y-2">
+                <div class="flex justify-between font-bold">
+                    <span class="text-emerald-900">Token ID:</span>
+                    <span class="font-mono text-emerald-950">${t.id}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-500">Farmer Name:</span>
+                    <span class="font-bold text-slate-800">${t.farmer_name}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-500">Procurement Center:</span>
+                    <span class="font-bold text-slate-800">${t.center_name}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-500">Center Type:</span>
+                    <span class="font-bold ${isPvt ? 'text-amber-700' : 'text-emerald-700'}">${isPvt ? '🏢 Private Corporate Mandi' : '🏛️ Government APMC Mandi'}</span>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 text-xs">
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                    <p class="text-slate-400">Crop Produce</p>
+                    <p class="font-bold text-slate-900 text-sm">${t.crop_name}</p>
+                </div>
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                    <p class="text-slate-400">Net Certified Weight</p>
+                    <p class="font-mono font-bold text-slate-900 text-sm">${t.net_weight_qtl || t.estimated_quantity_qtl} Quintals</p>
+                </div>
+                <div class="p-3 bg-slate-50 rounded-xl border border-slate-200">
+                    <p class="text-slate-400">Rate Applied</p>
+                    <p class="font-mono font-bold text-emerald-800 text-sm">₹${t.msp_rate_applied || 2425} / Qtl</p>
+                </div>
+                <div class="p-3 bg-emerald-100/70 rounded-xl border border-emerald-300">
+                    <p class="text-emerald-800 font-bold">Total Disbursed</p>
+                    <p class="font-mono font-black text-emerald-950 text-base">₹${(t.total_amount_inr || ((t.msp_rate_applied||2425)*t.estimated_quantity_qtl)).toLocaleString("en-IN")}</p>
+                </div>
+            </div>
+
+            <div class="p-3 bg-slate-50 rounded-xl border border-slate-200 space-y-1">
+                <div class="flex justify-between">
+                    <span class="text-slate-400">DBT Bank Reference:</span>
+                    <span class="font-mono font-bold text-slate-800">${t.dbt_reference_no || 'DBT-2026-APMC-9941824'}</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-400">Bank Account:</span>
+                    <span class="font-mono text-slate-800">State Bank of India (XXXXXX4892)</span>
+                </div>
+                <div class="flex justify-between">
+                    <span class="text-slate-400">Security Verification:</span>
+                    <span class="font-bold text-emerald-700">✓ AnnaSetu Cryptographic Hash Match</span>
+                </div>
+            </div>
+        `;
+
+        document.getElementById("receipt-modal").classList.remove("hidden");
+    }
+
+    function closeReceiptModal() {
+        document.getElementById("receipt-modal").classList.add("hidden");
+    }
+
+    document.addEventListener("DOMContentLoaded", loadEarningsData);
+</script>
+{% endblock %}

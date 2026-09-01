@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AnnaSetu (अन्नसेतु) | A bridge that connects farmers{% endblock %}</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        kisan: {
+                            50: '#f4fbf5',
+                            100: '#e5f6e8',
+                            200: '#cbeed1',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d',
+                            800: '#126135',
+                            900: '#0e4c29',
+                            950: '#072e18'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="/static/css/styles.css">
+    <style>
+        body {
+            background-color: #f6f8f5;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        .sidebar-active {
+            background-color: #eaf5ea !important;
+            color: #14532d !important;
+            font-weight: 700 !important;
+        }
+        .simple-mode-active {
+            font-size: 1.15rem !important;
+            line-height: 1.6 !important;
+        }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body id="app-body" class="text-slate-800 antialiased min-h-screen flex flex-col selection:bg-emerald-600 selection:text-white">
+
+    <div class="flex flex-1 min-h-screen">
+        
+        <!-- Left Sidebar (Desktop Fixed Sidebar) -->
+        <aside class="hidden md:flex w-64 bg-white border-r border-slate-200/80 flex-col justify-between p-4 sticky top-0 h-screen z-30 shadow-sm">
+            
+            <div class="space-y-6">
+                <!-- Brand Logo (AnnaSetu - A bridge that connects farmers) -->
+                <a href="/" class="flex items-center space-x-3 px-2 py-2 group">
+                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-700 text-white flex items-center justify-center text-2xl shadow-md group-hover:scale-105 transition-transform">
+                        🌾
+                    </div>
+                    <div>
+                        <div class="flex items-center space-x-1.5">
+                            <span class="text-xl font-black text-slate-900 tracking-tight">AnnaSetu</span>
+                            <span class="text-[9px] bg-emerald-100 text-emerald-800 font-extrabold px-1.5 py-0.5 rounded-full border border-emerald-300">Govt. Certified</span>
+                        </div>
+                        <p class="text-[10.5px] text-emerald-700 font-bold italic leading-tight mt-0.5">
+                            "A bridge that connects farmers"
+                        </p>
+                    </div>
+                </a>
+
+                <!-- Navigation Links List -->
+                <nav class="space-y-1 text-sm font-medium">
+                    <a href="/" id="nav-dash" class="flex items-center space-x-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all sidebar-active">
+                        <span class="text-lg">🏠</span>
+                        <span data-i18n="nav_home">Dashboard</span>
+                    </a>
+
+                    <a href="/book" id="nav-sell" class="flex items-center space-x-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all">
+                        <span class="text-lg">🌾</span>
+                        <span data-i18n="nav_book">Sell Crop</span>
+                    </a>
+
+                    <a href="/ai-advisor" id="nav-ai" class="flex items-center space-x-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all group">
+                        <span class="text-lg">🤖</span>
+                        <span class="font-bold text-emerald-800 flex items-center space-x-1.5">
+                            <span>AI Advisor</span>
+                            <span class="text-[9px] bg-emerald-600 text-white font-extrabold px-1.5 py-0.2 rounded-full">FREE</span>
+                        </span>
+                    </a>
+
+                    <button onclick="openPricesModal()" class="w-full flex items-center space-x-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all text-left">
+                        <span class="text-lg">₹</span>
+                        <span data-i18n="nav_prices">Market Prices</span>
+                    </button>
+
+                    <a href="/centers" id="nav-mandis" class="flex items-center space-x-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all">
+                        <span class="text-lg">📍</span>
+                        <span data-i18n="nav_centers">Nearby Mandis</span>
+                    </a>
+
+                    <a href="/track" id="nav-token" class="flex items-center space-x-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all">
+                        <span class="text-lg">🎫</span>
+                        <span data-i18n="nav_track">Mandi Token</span>
+                    </a>
+
+                    <a href="/sales" id="nav-sales" class="flex items-center space-x-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all">
+                        <span class="text-lg">📦</span>
+                        <span data-i18n="nav_sales">My Sales & Earnings</span>
+                    </a>
+
+                    <a href="/staff" class="flex items-center space-x-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all">
+                        <span class="text-lg">🏛️</span>
+                        <span data-i18n="nav_staff">Staff Board</span>
+                    </a>
+
+                    <a href="/admin" class="flex items-center space-x-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all">
+                        <span class="text-lg">📊</span>
+                        <span data-i18n="nav_admin">Ministry Admin</span>
+                    </a>
+
+                    <a href="/ivr" class="flex items-center space-x-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all">
+                        <span class="text-lg">🎙️</span>
+                        <span data-i18n="nav_ivr">Voice / IVR Sim</span>
+                    </a>
+
+                    <button onclick="openOfflineSmsModal()" class="w-full flex items-center space-x-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all text-left group">
+                        <span class="text-lg">📲</span>
+                        <span class="font-bold text-slate-800 flex items-center space-x-1.5">
+                            <span data-i18n="nav_offline">Offline SMS / USSD</span>
+                            <span class="text-[9px] bg-blue-600 text-white font-extrabold px-1.5 py-0.2 rounded-full">NO NET</span>
+                        </span>
+                    </button>
+
+                    <button onclick="openHelpModal()" class="w-full flex items-center space-x-3 px-4 py-3 rounded-2xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-all text-left">
+                        <span class="text-lg">❓</span>
+                        <span data-i18n="nav_help">Help & Support</span>
+                    </button>
+                </nav>
+            </div>
+
+            <!-- Bottom Mode Toggle (सरल मोड / Simple Mode) -->
+            <div class="pt-4 border-t border-slate-100 space-y-2">
+                <button onclick="toggleSimpleMode()" id="simple-mode-btn" class="w-full flex items-center justify-between px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 hover:bg-slate-100 text-xs font-bold text-slate-700 transition-all">
+                    <span class="flex items-center space-x-2">
+                        <span>👁️</span>
+                        <span id="simple-mode-text">सरल मोड (Simple Mode)</span>
+                    </span>
+                    <span id="simple-mode-indicator" class="w-2.5 h-2.5 rounded-full bg-slate-300"></span>
+                </button>
+                <div class="px-2 text-[10px] text-slate-400">
+                    Ministry of Consumer Affairs, Food & Public Distribution
+                </div>
+            </div>
+        </aside>
+
+        <!-- Right Main Viewport Area -->
+        <div class="flex-1 flex flex-col min-w-0">
+            
+            <!-- Top Bar Header -->
+            <header class="bg-white/80 backdrop-blur-md sticky top-0 z-20 border-b border-slate-200/80 px-4 sm:px-8 py-3.5 flex items-center justify-between shadow-xs">
+                
+                <!-- Left Title / Mobile Toggle -->
+                <div class="flex items-center space-x-3">
+                    <button onclick="toggleMobileSidebar()" class="md:hidden p-2 rounded-xl text-slate-600 hover:bg-slate-100">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                    </button>
+                    <div>
+                        <p class="text-xs text-emerald-700 font-bold italic">“A bridge that connects farmers”</p>
+                        <h2 class="text-base font-extrabold text-slate-900">AnnaSetu (अन्नसेतु) Portal</h2>
+                    </div>
+                </div>
+
+                <!-- Right Quick Status & Multilingual Controls -->
+                <div class="flex items-center space-x-3">
+                    
+                    <!-- Quick Role Switcher (Farmer vs Staff) -->
+                    <div class="flex items-center bg-slate-100 p-1 rounded-2xl border border-slate-200 text-xs font-bold shadow-xs">
+                        <a href="/" id="role-farmer-btn" class="px-3 py-1.5 rounded-xl bg-white text-emerald-900 shadow-xs flex items-center space-x-1.5 transition-all">
+                            <span>👨‍🌾</span>
+                            <span class="hidden sm:inline" data-i18n="role_farmer">Farmer</span>
+                        </a>
+                        <a href="/staff" id="role-staff-btn" class="px-3 py-1.5 rounded-xl text-slate-600 hover:text-slate-900 flex items-center space-x-1.5 transition-all">
+                            <span>🏛️</span>
+                            <span class="hidden sm:inline" data-i18n="role_staff">Mandi Staff</span>
+                        </a>
+                    </div>
+
+                    <!-- Real-Time WebSocket Indicator -->
+                    <div class="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200/80" title="Real-time WebSockets Connected">
+                        <div id="ws-status-dot" class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                        <span id="ws-status-text" class="text-xs font-bold text-emerald-800" data-i18n="live_status">Live</span>
+                    </div>
+
+                    <!-- Language Selector -->
+                    <div class="relative">
+                        <select id="lang-select" onchange="setLanguage(this.value)" class="appearance-none bg-slate-50 border border-slate-200 text-slate-800 text-xs font-bold rounded-xl px-3 py-2 pr-7 shadow-xs focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer">
+                            <option value="en">🌐 English</option>
+                            <option value="hi">🇮🇳 हिन्दी (Hindi)</option>
+                            <option value="pa">🌾 ਪੰਜਾਬੀ (Punjabi)</option>
+                            <option value="mr">🚩 मराठी (Marathi)</option>
+                            <option value="te">☀️ తెలుగు (Telugu)</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400">
+                            <svg class="h-3.5 w-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Main Dynamic Page Content Container -->
+            <main class="flex-1 p-4 sm:p-8 max-w-7xl w-full mx-auto space-y-6">
+                {% block content %}{% endblock %}
+            </main>
+
+        </div>
+
+    </div>
+
+    <!-- Floating Voice Action Button (बोलकर पूछें) -->
+    <div class="fixed bottom-6 right-6 z-40">
+        <button onclick="openVoiceQueryModal()" class="flex items-center space-x-2.5 px-5 py-3 rounded-full bg-[#105a33] hover:bg-[#0c4326] text-white font-bold text-sm shadow-2xl shadow-emerald-950/40 hover:scale-105 transition-all ring-4 ring-white">
+            <span class="text-lg">🎙️</span>
+            <span data-i18n="ask_voice">बोलकर पूछें</span>
+        </button>
+    </div>
+
+    <!-- Interactive Voice Assistant Modal -->
+    <div id="voice-query-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-200 text-center">
+            <div class="w-16 h-16 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-3xl mx-auto shadow-md animate-pulse">
+                🎙️
+            </div>
+            <div class="space-y-1">
+                <h3 class="text-lg font-black text-slate-900">AnnaSetu Voice Assistant (बोलकर पूछें)</h3>
+                <p class="text-xs text-slate-500">Ask in Hindi or English (e.g. "मेरा टोकन कब आएगा?", "गेहूं का भाव क्या है?")</p>
+            </div>
+
+            <div class="space-y-3">
+                <div class="flex items-center space-x-2">
+                    <input type="text" id="voice-modal-input" placeholder="यहाँ बोलें या टाइप करें..." class="w-full px-4 py-3 rounded-xl border border-slate-300 text-sm font-medium focus:ring-2 focus:ring-emerald-500 focus:outline-none" value="मेरा टोकन कब आएगा?" />
+                    <button onclick="simulateVoiceQuery()" class="px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl font-bold text-sm shadow">
+                        पूछें
+                    </button>
+                </div>
+
+                <div id="voice-response-box" class="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-xs text-emerald-900 font-medium text-left hidden space-y-1">
+                    <p class="font-bold flex items-center space-x-1.5">
+                        <span>🔊</span>
+                        <span>AnnaSetu Assistant:</span>
+                    </p>
+                    <p id="voice-response-text">-</p>
+                </div>
+            </div>
+
+            <div class="flex items-center justify-between pt-3 border-t border-slate-100 text-xs">
+                <span class="text-slate-400">Toll-Free: 1800-180-2626</span>
+                <button onclick="closeVoiceQueryModal()" class="px-4 py-1.5 text-slate-600 hover:bg-slate-100 rounded-lg font-bold">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Market Prices Modal (आज का भाव) -->
+    <div id="prices-modal" class="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-200">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                <div>
+                    <h3 class="text-lg font-black text-slate-900">🌾 Today's Official Mandi MSP Rates</h3>
+                    <p class="text-xs text-slate-500">Government Minimum Support Prices (2026-27 Season)</p>
+                </div>
+                <button onclick="closePricesModal()" class="text-slate-400 hover:text-slate-600 p-1">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <div class="divide-y divide-slate-100 text-xs">
+                <div class="py-3 flex items-center justify-between">
+                    <div>
+                        <p class="font-bold text-slate-900 text-sm">Wheat (गेहूं)</p>
+                        <p class="text-slate-400">Rabi Season • Grade FAQ</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full font-black text-sm">₹2,425 / Qtl</span>
+                    </div>
+                </div>
+                <div class="py-3 flex items-center justify-between">
+                    <div>
+                        <p class="font-bold text-slate-900 text-sm">Mustard / Rapeseed (सरसों)</p>
+                        <p class="text-slate-400">Oilseed • Standard FAQ</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full font-black text-sm">₹5,950 / Qtl</span>
+                    </div>
+                </div>
+                <div class="py-3 flex items-center justify-between">
+                    <div>
+                        <p class="font-bold text-slate-900 text-sm">Paddy Grade A (धान ग्रेड-ए)</p>
+                        <p class="text-slate-400">Kharif Season</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full font-black text-sm">₹2,320 / Qtl</span>
+                    </div>
+                </div>
+                <div class="py-3 flex items-center justify-between">
+                    <div>
+                        <p class="font-bold text-slate-900 text-sm">Soybean (सोयाबीन)</p>
+                        <p class="text-slate-400">Yellow Standard</p>
+                    </div>
+                    <div class="text-right">
+                        <span class="px-3 py-1 bg-emerald-100 text-emerald-800 rounded-full font-black text-sm">₹4,892 / Qtl</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-100 flex justify-end">
+                <button onclick="closePricesModal()" class="px-5 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold">
+                    Close
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Offline SMS & USSD (*99#) Feature Phone Simulator Modal -->
+    <div id="offline-sms-modal" class="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-200">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                <div class="flex items-center space-x-3">
+                    <span class="text-3xl">📱</span>
+                    <div>
+                        <h3 class="text-lg font-black text-slate-900">Zero-Internet Offline Mode (SMS & USSD)</h3>
+                        <p class="text-xs text-slate-500">For 2G Feature Phones & Deep Rural Zero-Connectivity Zones</p>
+                    </div>
+                </div>
+                <button onclick="closeOfflineSmsModal()" class="text-slate-400 hover:text-slate-600 p-1">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+
+            <!-- Two Tab Options: SMS vs USSD -->
+            <div class="space-y-4">
+                <div class="p-4 bg-slate-900 text-white rounded-2xl space-y-3 font-mono text-xs shadow-inner">
+                    <div class="flex items-center justify-between text-slate-400 border-b border-slate-700 pb-2">
+                        <span>📲 SMS GATEWAY TO: <b>56161</b></span>
+                        <span class="text-emerald-400 font-bold">● ONLINE</span>
+                    </div>
+                    <div class="space-y-1 text-amber-300">
+                        <p class="text-slate-400"># Farmer Sends (बिना इंटरनेट SMS):</p>
+                        <p class="font-bold text-white bg-slate-800 p-2 rounded">BOOK WHEAT 50 HR05 TRACTOR</p>
+                    </div>
+                    <div class="space-y-1 text-emerald-300">
+                        <p class="text-slate-400"># AnnaSetu Instant Reply SMS:</p>
+                        <p class="font-bold bg-emerald-950/80 p-2.5 rounded border border-emerald-500/40 text-emerald-200 leading-relaxed">
+                            "नमस्ते रमेश कुमार! आपका टोकन #AS-26-WHT-101 सुरक्षित है। करनाल अनाज मंडी, सुबह 10:00 बजे पहुंचे। कतार: 4 वाहन आगे। अनुमानित भुगतान: ₹1,21,250।"
+                        </p>
+                    </div>
+                </div>
+
+                <!-- USSD Code Simulation (*99*26#) -->
+                <div class="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl space-y-2 text-xs text-emerald-900">
+                    <p class="font-black text-sm text-emerald-950 flex items-center space-x-1.5">
+                        <span>⚡ USSD Quick Dial:</span>
+                        <span class="font-mono bg-emerald-200 text-emerald-950 px-2 py-0.5 rounded font-bold">*99*26#</span>
+                    </p>
+                    <p>Farmers dial from any ₹1,000 keypad phone to book slots, check queue wait-time, or receive live mandi MSP updates instantly without downloading any app or mobile data.</p>
+                </div>
+            </div>
+
+            <div class="pt-3 border-t border-slate-100 flex items-center justify-between">
+                <span class="text-xs text-slate-400">Toll-Free Helpline: 1800-180-2626</span>
+                <button onclick="closeOfflineSmsModal()" class="px-5 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold shadow">
+                    Close Demo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-6 right-24 z-50 flex flex-col space-y-3 pointer-events-none"></div>
+
+    <!-- Scripts -->
+    <script src="/static/js/websocket.js"></script>
+    <script src="/static/js/app.js"></script>
+    <script>
+        // Simple Mode Accessibility Toggle
+        let isSimpleMode = false;
+        function toggleSimpleMode() {
+            isSimpleMode = !isSimpleMode;
+            const body = document.getElementById("app-body");
+            const indicator = document.getElementById("simple-mode-indicator");
+            if (isSimpleMode) {
+                body.classList.add("simple-mode-active");
+                if (indicator) indicator.className = "w-2.5 h-2.5 rounded-full bg-emerald-500";
+                showToast("👁️ सरल मोड सक्रिय (Simple Mode Enabled)", "info");
+            } else {
+                body.classList.remove("simple-mode-active");
+                if (indicator) indicator.className = "w-2.5 h-2.5 rounded-full bg-slate-300";
+                showToast("मानक मोड (Standard Mode)", "info");
+            }
+        }
+
+        function openPricesModal() {
+            document.getElementById("prices-modal")?.classList.remove("hidden");
+        }
+        function closePricesModal() {
+            document.getElementById("prices-modal")?.classList.add("hidden");
+        }
+
+        function openVoiceQueryModal() {
+            document.getElementById("voice-query-modal")?.classList.remove("hidden");
+        }
+        function closeVoiceQueryModal() {
+            document.getElementById("voice-query-modal")?.classList.add("hidden");
+        }
+
+        function simulateVoiceQuery() {
+            const input = document.getElementById("voice-modal-input");
+            const respBox = document.getElementById("voice-response-box");
+            const respText = document.getElementById("voice-response-text");
+            
+            const reply = "नमस्ते! आपका टोकन स्लॉट सुरक्षित है। आपकी मंडी में वर्तमान में गेहूं का भाव ₹2,425 प्रति क्विंटल है। औसत प्रतीक्षा समय 45 मिनट है।";
+            
+            if (respBox && respText) {
+                respText.innerText = reply;
+                respBox.classList.remove("hidden");
+            }
+
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel();
+                const utter = new SpeechSynthesisUtterance(reply);
+                utter.lang = "hi-IN";
+                window.speechSynthesis.speak(utter);
+            }
+        }
+
+        function openHelpModal() {
+            showToast("📞 Toll-Free Helpline: 1800-180-2626 (Available 24x7)", "info");
+        }
+
+        function openOfflineSmsModal() {
+            document.getElementById("offline-sms-modal")?.classList.remove("hidden");
+        }
+        function closeOfflineSmsModal() {
+            document.getElementById("offline-sms-modal")?.classList.add("hidden");
+        }
+    </script>
+    {% block extra_scripts %}{% endblock %}
+</body>
+</html>

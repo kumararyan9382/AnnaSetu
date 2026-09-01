@@ -1,0 +1,585 @@
+{% extends "base.html" %}
+
+{% block title %}Live Procurement Status Tracker | AnnaSetu (अन्नसेतु){% endblock %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+
+    <!-- Top Bar: Token Search & Quick Voice / Print Controls -->
+    <div class="bg-white p-4 sm:p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+        <!-- Search Active Token -->
+        <div class="w-full md:w-auto flex-1 max-w-md">
+            <form onsubmit="event.preventDefault(); loadTokenTracker(document.getElementById('lookup-token-input').value.trim());" class="flex items-center space-x-2">
+                <input type="text" id="lookup-token-input" value="{{ initial_token_id }}" placeholder="Enter Token ID (e.g. AS-26-WHT-101)..." class="w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm font-mono font-bold focus:ring-2 focus:ring-emerald-500 focus:outline-none" required />
+                <button type="submit" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow transition-all">
+                    Lookup
+                </button>
+            </form>
+        </div>
+
+        <!-- Voice Readout, Live Simulation & Print Action Buttons -->
+        <div class="flex flex-wrap items-center gap-2 w-full md:w-auto justify-end">
+            <!-- 1-Click Advance Next Button -->
+            <button onclick="advanceCurrentTokenNext()" class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-slate-900 text-xs font-black flex items-center space-x-1.5 transition-all shadow-md">
+                <span>⚡ Advance Stage</span>
+            </button>
+
+            <!-- Auto-Play Simulation Button -->
+            <button id="auto-play-btn" onclick="toggleAutoSimulate()" class="px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-extrabold flex items-center space-x-1.5 transition-all shadow-md">
+                <span id="auto-play-icon">▶</span>
+                <span id="auto-play-text">Auto-Play Demo</span>
+            </button>
+
+            <button onclick="speakTokenStatus()" class="px-3.5 py-2.5 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 text-xs font-bold flex items-center space-x-1.5 transition-all shadow-sm">
+                <span>🔊</span>
+                <span data-i18n="voice_speak">Voice</span>
+            </button>
+            
+            <button onclick="window.print()" class="px-3.5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center space-x-1.5 transition-all shadow-sm">
+                <span>🖨️</span>
+                <span data-i18n="print_receipt">Print</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Tracker Container -->
+    <div id="tracker-content" class="space-y-6">
+
+        <!-- Token Header Overview Banner -->
+        <div class="bg-white rounded-3xl border border-slate-200/90 shadow-sm p-6 sm:p-8 space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 pb-6">
+                <div>
+                    <div class="flex flex-wrap items-center gap-3">
+                        <span class="text-3xl sm:text-4xl font-mono font-black text-slate-900" id="display-token-id">{{ initial_token_id }}</span>
+                        <span id="tracker-status-badge" class="px-4 py-1.5 rounded-full text-xs font-black border bg-emerald-100 text-emerald-800 border-emerald-300 shadow-xs">
+                            Loading Stage...
+                        </span>
+                        <button type="button" onclick="speakTokenStatus()" class="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-300 rounded-full text-xs font-bold flex items-center space-x-1 shadow-xs transition-transform active:scale-95">
+                            <span>🔊</span>
+                            <span>स्थिति सुनें (Listen)</span>
+                        </button>
+                    </div>
+                    <p class="text-xs text-slate-600 mt-1 font-medium">
+                        👤 किसान: <b id="display-farmer-name" class="text-slate-900 text-sm">-</b> &bull; 📱 मोबाइल: <span id="display-farmer-phone" class="font-mono font-bold text-slate-700">-</span>
+                    </p>
+                </div>
+
+                <!-- Estimated Wait Time & Queue Position Box -->
+                <div class="flex items-center space-x-4 bg-gradient-to-r from-emerald-50 to-teal-50 border-2 border-emerald-300 p-4 rounded-2xl shadow-xs">
+                    <div class="text-center px-3">
+                        <p class="text-[10px] text-emerald-800 uppercase font-black tracking-wide" data-i18n="farmers_ahead_label">कतार में आगे वाहन</p>
+                        <p id="display-ahead-count" class="text-2xl font-black text-emerald-950">-</p>
+                    </div>
+                    <div class="h-10 w-px bg-emerald-300"></div>
+                    <div class="text-center px-3">
+                        <p class="text-[10px] text-emerald-800 uppercase font-black tracking-wide" data-i18n="est_wait_label">अनुमानित प्रतीक्षा समय</p>
+                        <p id="display-wait-mins" class="text-2xl font-black text-emerald-950">- Mins</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Key Token Details Grid (Visual Cards) -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+                <div class="p-3.5 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-1">
+                    <p class="text-slate-500 font-bold flex items-center space-x-1"><span>🌾</span><span>फसल Produce</span></p>
+                    <p id="display-crop-name" class="font-black text-slate-900 text-sm">-</p>
+                </div>
+                <div class="p-3.5 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-1">
+                    <p class="text-slate-500 font-bold flex items-center space-x-1"><span>🏛️</span><span>उपार्जन मंडी</span></p>
+                    <p id="display-center-name" class="font-black text-slate-900 text-sm">-</p>
+                </div>
+                <div class="p-3.5 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-1">
+                    <p class="text-slate-500 font-bold flex items-center space-x-1"><span>🚜</span><span>वाहन / ट्रॉली</span></p>
+                    <p id="display-vehicle" class="font-black text-slate-900 text-sm">-</p>
+                </div>
+                <div class="p-3.5 bg-slate-50 border border-slate-200/80 rounded-2xl space-y-1">
+                    <p class="text-slate-500 font-bold flex items-center space-x-1"><span>⏰</span><span>समय स्लॉट</span></p>
+                    <p id="display-slot" class="font-black text-slate-900 text-sm">-</p>
+                </div>
+            </div>
+
+            <!-- Fraud Prevention, IMD Weather & Gate QR Pass Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+                <!-- 1. e-Bhulekh Land Verification Seal -->
+                <div class="p-3.5 bg-emerald-50/80 border border-emerald-300 rounded-2xl flex items-center space-x-3">
+                    <span class="text-2xl">🛡️</span>
+                    <div>
+                        <p class="font-extrabold text-emerald-900 flex items-center space-x-1">
+                            <span>e-Bhulekh सत्यापित</span>
+                            <span class="text-[9px] bg-emerald-700 text-white font-bold px-1.5 py-0.2 rounded-full">GOVT</span>
+                        </p>
+                        <p class="text-[11px] text-emerald-800">4.50 एकड़ (खसरा #214/12) &bull; कोटा: 90 Qtl</p>
+                    </div>
+                </div>
+
+                <!-- 2. IMD Weather & Spoilage Advisory -->
+                <div class="p-3.5 bg-blue-50/80 border border-blue-300 rounded-2xl flex items-center space-x-3">
+                    <span class="text-2xl">☀️</span>
+                    <div>
+                        <p class="font-extrabold text-blue-900 flex items-center space-x-1">
+                            <span>IMD मंडी मौसम गार्ड</span>
+                            <span class="text-[9px] bg-blue-700 text-white font-bold px-1.5 py-0.2 rounded-full">LIVE</span>
+                        </p>
+                        <p class="text-[11px] text-blue-800">28.5°C साफ मौसम &bull; वर्षा जोखिम: 8% (सुरक्षित)</p>
+                    </div>
+                </div>
+
+                <!-- 3. Mandi Gate Fast QR Pass -->
+                <div class="p-3.5 bg-slate-900 text-white rounded-2xl flex items-center justify-between">
+                    <div class="flex items-center space-x-2.5">
+                        <span class="text-2xl">📷</span>
+                        <div>
+                            <p class="font-bold text-amber-300">Mandi Gate Fast QR</p>
+                            <p class="text-[10px] text-slate-300">1-Second Security Check-in</p>
+                        </div>
+                    </div>
+                    <span class="px-2.5 py-1 bg-amber-400 text-slate-950 rounded-lg font-black text-[10px]">SCANNABLE</span>
+                </div>
+            </div>
+
+            <!-- Overall Progress Bar -->
+            <div class="space-y-2">
+                <div class="flex justify-between text-xs font-bold text-slate-700">
+                    <span>उपार्जन प्रगति (Procurement Stage Progress)</span>
+                    <span id="tracker-progress-text" class="text-emerald-700 font-black">🔴 Live Synced</span>
+                </div>
+                <div class="w-full bg-slate-200 rounded-full h-3.5 overflow-hidden p-0.5">
+                    <div id="tracker-progress-bar" class="bg-gradient-to-r from-emerald-500 via-emerald-600 to-teal-600 h-2.5 rounded-full transition-all duration-700 ease-out" style="width: 20%;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5-Stage Visual Progression Steps -->
+        <div class="grid grid-cols-1 md:grid-cols-5 gap-3.5">
+            <!-- Stage 1 -->
+            <div id="stage-step-1" class="stage-card p-4 rounded-2xl border-2 border-slate-200 bg-white shadow-sm space-y-2 text-center sm:text-left">
+                <div class="flex items-center justify-between">
+                    <div id="stage-icon-1" class="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-black text-base shadow-xs">१</div>
+                    <span id="stage-time-1" class="text-[10px] font-mono text-slate-400 font-bold">Pending</span>
+                </div>
+                <h4 class="font-black text-slate-900 text-xs" data-i18n="stage_1_title">१. स्लॉट बुक (Booked)</h4>
+                <p class="text-[11px] text-slate-500">टोकन जारी & स्लॉट आवंटित</p>
+            </div>
+
+            <!-- Stage 2 -->
+            <div id="stage-step-2" class="stage-card p-4 rounded-2xl border-2 border-slate-200 bg-white shadow-sm space-y-2 text-center sm:text-left">
+                <div class="flex items-center justify-between">
+                    <div id="stage-icon-2" class="w-10 h-10 rounded-2xl bg-slate-200 text-slate-600 flex items-center justify-center font-black text-base shadow-xs">२</div>
+                    <span id="stage-time-2" class="text-[10px] font-mono text-slate-400 font-bold">Pending</span>
+                </div>
+                <h4 class="font-black text-slate-900 text-xs" data-i18n="stage_2_title">२. गेट एंट्री (Gate Entry)</h4>
+                <p class="text-[11px] text-slate-500">मंडी गेट में प्रवेश & कतार</p>
+            </div>
+
+            <!-- Stage 3 -->
+            <div id="stage-step-3" class="stage-card p-4 rounded-2xl border-2 border-slate-200 bg-white shadow-sm space-y-2 text-center sm:text-left">
+                <div class="flex items-center justify-between">
+                    <div id="stage-icon-3" class="w-10 h-10 rounded-2xl bg-slate-200 text-slate-600 flex items-center justify-center font-black text-base shadow-xs">३</div>
+                    <span id="stage-time-3" class="text-[10px] font-mono text-slate-400 font-bold">Pending</span>
+                </div>
+                <h4 class="font-black text-slate-900 text-xs" data-i18n="stage_3_title">३. धर्मकांटा तौल (Scale)</h4>
+                <p class="text-[11px] text-slate-500">गाड़ी का सकल वजन दर्ज</p>
+            </div>
+
+            <!-- Stage 4 -->
+            <div id="stage-step-4" class="stage-card p-4 rounded-2xl border-2 border-slate-200 bg-white shadow-sm space-y-2 text-center sm:text-left">
+                <div class="flex items-center justify-between">
+                    <div id="stage-icon-4" class="w-10 h-10 rounded-2xl bg-slate-200 text-slate-600 flex items-center justify-center font-black text-base shadow-xs">४</div>
+                    <span id="stage-time-4" class="text-[10px] font-mono text-slate-400 font-bold">Pending</span>
+                </div>
+                <h4 class="font-black text-slate-900 text-xs" data-i18n="stage_4_title">४. गुणवत्ता जांच (Lab)</h4>
+                <p class="text-[11px] text-slate-500">नमी व ग्रेड प्रमाणित (FAQ A)</p>
+            </div>
+
+            <!-- Stage 5 -->
+            <div id="stage-step-5" class="stage-card p-4 rounded-2xl border-2 border-slate-200 bg-white shadow-sm space-y-2 text-center sm:text-left">
+                <div class="flex items-center justify-between">
+                    <div id="stage-icon-5" class="w-10 h-10 rounded-2xl bg-slate-200 text-slate-600 flex items-center justify-center font-black text-base shadow-xs">५</div>
+                    <span id="stage-time-5" class="text-[10px] font-mono text-slate-400 font-bold">Pending</span>
+                </div>
+                <h4 class="font-black text-slate-900 text-xs" data-i18n="stage_5_title">५. बैंक भुगतान (DBT Paid)</h4>
+                <p class="text-[11px] text-slate-500">सीधे खाते में पैसे ट्रांसफर</p>
+            </div>
+        </div>
+
+        <!-- Stage Detailed Measurements Inspection Cards -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="bg-white p-5 rounded-3xl border-2 border-slate-200 shadow-sm space-y-2">
+                <div class="flex items-center space-x-2 text-slate-900">
+                    <span class="text-2xl">⚖️</span>
+                    <h5 class="font-black text-sm">धर्मकांटा तौल (Weighbridge Scale)</h5>
+                </div>
+                <p id="measured-weighbridge-val" class="text-xs text-slate-600 font-medium">Awaiting weighbridge scale...</p>
+            </div>
+
+            <div class="bg-white p-5 rounded-3xl border-2 border-slate-200 shadow-sm space-y-3">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-2 text-slate-900">
+                        <span class="text-2xl">🔬</span>
+                        <h5 class="font-black text-sm">लैब नमी व गुणवत्ता जांच</h5>
+                    </div>
+                    <button type="button" onclick="openAIGrainScanner()" class="px-3 py-1 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-[11px] font-black shadow-xs transition-transform active:scale-95 flex items-center space-x-1">
+                        <span>📸</span>
+                        <span>AI दाना स्कैनर</span>
+                    </button>
+                </div>
+                <p id="measured-quality-val" class="text-xs text-slate-600 font-medium">Awaiting lab inspection...</p>
+            </div>
+
+            <div class="bg-white p-5 rounded-3xl border-2 border-emerald-500/80 bg-emerald-50/40 shadow-sm space-y-2">
+                <div class="flex items-center space-x-2 text-emerald-900">
+                    <span class="text-2xl">💳</span>
+                    <h5 class="font-black text-sm">सीधे बैंक खाते में भुगतान (DBT Payment)</h5>
+                </div>
+                <p id="measured-payment-val" class="text-xs text-slate-600 font-medium">Calculated upon final weighing</p>
+            </div>
+        </div>
+
+        <!-- Printable Official Verified e-Receipt / Voucher -->
+        <div id="voucher-section" class="pt-4 space-y-4">
+            
+            <!-- Quick Voucher Action Bar -->
+            <div class="max-w-3xl mx-auto flex items-center justify-between bg-slate-900 text-white p-4 rounded-2xl shadow-md no-print">
+                <div class="flex items-center space-x-2">
+                    <span class="text-xl">🖨️</span>
+                    <div>
+                        <p class="text-xs font-bold">Official Procurement Payment Voucher</p>
+                        <p class="text-[10px] text-slate-400">Digital verification stamp • Ready for Print / PDF</p>
+                    </div>
+                </div>
+                <button onclick="window.print()" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-extrabold shadow-lg transition-all flex items-center space-x-2">
+                    <span>🖨️ Print e-Receipt Now</span>
+                </button>
+            </div>
+
+            <div id="printable-voucher" class="voucher-paper rounded-3xl p-6 sm:p-10 shadow-sm border border-slate-300 max-w-3xl mx-auto space-y-6 bg-white">
+                <!-- Receipt Header -->
+                <div class="flex items-center justify-between border-b-2 border-slate-800 pb-4">
+                    <div class="flex items-center space-x-3">
+                        <span class="text-3xl">🌾</span>
+                        <div>
+                            <h3 class="text-lg font-black text-slate-900 uppercase">Govt. Procurement e-Receipt & Payment Voucher</h3>
+                            <p class="text-[11px] text-slate-500 font-medium">Department of Food & Public Distribution • AnnaSetu Verified</p>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <span id="rcpt-token-id" class="font-mono text-sm font-black px-3 py-1 bg-emerald-100 text-emerald-900 rounded-lg border border-emerald-300">AS-26-WHT-101</span>
+                        <p id="rcpt-date" class="text-[10px] text-slate-500 mt-1">-</p>
+                    </div>
+                </div>
+
+                <!-- Receipt Body Grid -->
+                <div class="grid grid-cols-2 gap-4 text-xs">
+                    <div>
+                        <p class="text-slate-400 font-medium">Farmer Name</p>
+                        <p id="rcpt-farmer-name" class="font-bold text-slate-900 text-sm">-</p>
+                    </div>
+                    <div>
+                        <p class="text-slate-400 font-medium">Registered Mobile</p>
+                        <p id="rcpt-farmer-phone" class="font-mono font-bold text-slate-900 text-sm">-</p>
+                    </div>
+                    <div>
+                        <p class="text-slate-400 font-medium">Crop Procured</p>
+                        <p id="rcpt-crop-name" class="font-bold text-slate-900 text-sm">-</p>
+                    </div>
+                    <div>
+                        <p class="text-slate-400 font-medium">Procurement Mandi</p>
+                        <p id="rcpt-center-name" class="font-bold text-slate-900 text-sm">-</p>
+                    </div>
+                </div>
+
+                <!-- Weight & MSP Calculation Table -->
+                <div class="border border-slate-200 rounded-xl overflow-hidden text-xs">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-50 font-bold text-slate-700 border-b border-slate-200">
+                            <tr>
+                                <th class="p-3">Gross Weight</th>
+                                <th class="p-3">Tare (Vehicle)</th>
+                                <th class="p-3">Net Quantity</th>
+                                <th class="p-3">MSP Rate</th>
+                                <th class="p-3 text-right">Total Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="font-semibold text-slate-800">
+                                <td id="rcpt-gross-kg" class="p-3">-</td>
+                                <td id="rcpt-tare-kg" class="p-3">-</td>
+                                <td id="rcpt-net-qtl" class="p-3 font-bold text-emerald-800">-</td>
+                                <td id="rcpt-msp-rate" class="p-3">-</td>
+                                <td id="rcpt-total-inr" class="p-3 text-right font-black text-emerald-700 text-sm">-</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Footer Sign-off & Blockchain Audit Seal -->
+                <div class="space-y-3 border-t border-slate-200 pt-4">
+                    <div class="flex items-center justify-between text-[11px] text-slate-500">
+                        <div>
+                            <p>DBT Bank Reference: <b id="rcpt-dbt-ref" class="font-mono text-slate-800">-</b></p>
+                            <p class="text-[10px] text-slate-400">Payment credited under Direct Benefit Transfer (Aadhaar Linked Account)</p>
+                        </div>
+                        <div class="text-right">
+                            <p class="font-bold text-slate-800">Mandi Superintendent</p>
+                            <p class="text-[10px] text-slate-400">Digitally Verified & Signed</p>
+                        </div>
+                    </div>
+
+                    <!-- Cryptographic Blockchain Audit Hash -->
+                    <div class="p-3 bg-slate-900 text-slate-300 rounded-xl font-mono text-[10px] flex items-center justify-between">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-emerald-400">🔗</span>
+                            <span>National AgriLedger Block #8921 &bull; Hash: <b class="text-emerald-400">0x8f2d9c3a...4b5c</b></span>
+                        </div>
+                        <span class="text-slate-400">IMMUTABLE CAG AUDIT TRAIL</span>
+                    </div>
+                </div>
+
+                <!-- Instant e-NWR Warehouse Micro-Credit & Print Buttons -->
+                <div class="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 no-print">
+                    <button type="button" onclick="applyEnwrLoan()" class="w-full sm:w-auto px-5 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-600 hover:to-amber-700 text-slate-950 rounded-xl text-xs font-black shadow transition-all flex items-center justify-center space-x-2">
+                        <span>🏦</span>
+                        <span>ई-गिरवी ऋण सुविधा (e-NWR 75% Advance Loan @ 4% KCC)</span>
+                    </button>
+
+                    <button onclick="window.print()" class="w-full sm:w-auto px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-black shadow-md transition-all flex items-center justify-center space-x-2">
+                        <span>🖨️ Print e-Receipt / Save PDF</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- AI Grain Scanner Modal -->
+<div id="ai-grain-modal" class="fixed inset-0 z-50 bg-slate-900/70 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="bg-white rounded-3xl max-w-lg w-full p-6 sm:p-8 space-y-6 shadow-2xl border border-slate-200">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+            <div class="flex items-center space-x-3">
+                <span class="text-3xl">🔬</span>
+                <div>
+                    <h3 class="text-lg font-black text-slate-900">AI Computer Vision Grain Scanner</h3>
+                    <p class="text-xs text-slate-500">Optical RGB Macro Inspection • Instant Grading</p>
+                </div>
+            </div>
+            <button onclick="closeAIGrainModal()" class="text-slate-400 hover:text-slate-600 p-1">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+
+        <div class="space-y-4">
+            <!-- Simulated Camera Viewfinder -->
+            <div class="relative bg-slate-950 rounded-2xl h-48 flex flex-col items-center justify-center overflow-hidden border-2 border-dashed border-indigo-400/60 p-4 text-center">
+                <div class="text-4xl animate-pulse">🌾🌾🌾</div>
+                <p class="text-xs text-indigo-200 mt-2 font-mono">Macro Sample: Wheat (Sharbati A-Grade)</p>
+                <span class="absolute top-3 left-3 bg-emerald-500/30 text-emerald-300 text-[10px] font-mono px-2 py-0.5 rounded-full border border-emerald-400/40">● 4K Optical Sensor Active</span>
+            </div>
+
+            <!-- Action Button -->
+            <button type="button" onclick="runAIGrainScan()" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 active:scale-98 text-white rounded-xl text-xs font-black shadow-lg transition-all flex items-center justify-center space-x-2">
+                <span>📸</span>
+                <span>Run Instant AI Grain Analysis</span>
+            </button>
+
+            <!-- Results Card -->
+            <div id="ai-grain-results" class="hidden p-4 bg-emerald-50 border-2 border-emerald-300 rounded-2xl space-y-2 text-xs text-emerald-950">
+                <div class="flex items-center justify-between font-black border-b border-emerald-200 pb-2">
+                    <span class="text-sm text-emerald-900">✅ Grade A Certified (FAQ Standard)</span>
+                    <span class="bg-emerald-600 text-white px-2 py-0.5 rounded-full text-[10px]">98.4% Confidence</span>
+                </div>
+                <div class="grid grid-cols-2 gap-2 pt-1 font-medium">
+                    <p>Broken Grains: <b class="text-emerald-900">1.2% (Limit &lt; 2%)</b></p>
+                    <p>Foreign Matter: <b class="text-emerald-900">0.4% (Limit &lt; 1%)</b></p>
+                    <p>Predicted Moisture: <b class="text-emerald-900">11.2% (Pass)</b></p>
+                    <p>MSP Eligibility: <b class="text-emerald-900">100% Full Rate</b></p>
+                </div>
+                <p class="text-[11px] text-emerald-800 font-bold mt-1">💡 निष्कर्ष: अनाज उच्च गुणवत्ता प्रमाणित है। किसी मानवीय पूर्वाग्रह के बिना पूर्ण समर्थन मूल्य के लिए स्वीकृत।</p>
+            </div>
+        </div>
+
+        <div class="pt-3 border-t border-slate-100 flex justify-end">
+            <button onclick="closeAIGrainModal()" class="px-5 py-2 bg-slate-900 text-white rounded-xl text-xs font-bold shadow">
+                Done / Close
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="/static/js/farmer.js"></script>
+<script>
+    const INITIAL_TOKEN_ID = "{{ initial_token_id }}";
+
+    function normalizeToken(t) {
+        if (!t) return "";
+        return String(t).replace(/\s+/g, '').replace(/–/g, '-').trim().toUpperCase();
+    }
+
+    function getActiveToken() {
+        if (typeof activeTokenData !== "undefined" && activeTokenData && activeTokenData.id) {
+            return normalizeToken(activeTokenData.id);
+        }
+        const inputVal = document.getElementById("lookup-token-input")?.value;
+        if (inputVal && normalizeToken(inputVal).startsWith("AS-26-")) {
+            return normalizeToken(inputVal);
+        }
+        const pathParts = window.location.pathname.split("/").filter(Boolean);
+        const lastPart = pathParts[pathParts.length - 1];
+        if (lastPart && normalizeToken(lastPart).startsWith("AS-26-")) {
+            return normalizeToken(lastPart);
+        }
+        return normalizeToken(INITIAL_TOKEN_ID) || "AS-26-WHT-101";
+    }
+
+    function speakStageUpdateVoice(stage) {
+        const stageSpeechMap = {
+            "REGISTERED": "स्लॉट बुक हो गया है। आपका टोकन कतार में दर्ज है।",
+            "GATE_ENTRY": "गेट एंट्री सफल! आपका वाहन मंडी गेट में प्रवेश कर चुका है।",
+            "WEIGHBRIDGE": "धर्मकांटा तौल सफल! आपकी गाड़ी का वजन दर्ज हो गया है।",
+            "QUALITY_CHECK": "गुणवत्ता जांच पास! आपकी फसल का ग्रेड-ए प्रमाणित हो गया है।",
+            "PAYMENT_PROCESSED": "बधाई हो! आपकी फसल का भुगतान सीधे बैंक खाते में ट्रांसफर हो गया है。"
+        };
+        const msg = stageSpeechMap[stage] || "आपकी फसल का अगला चरण पूरा हो गया है।";
+        if (typeof speakVoiceAnnouncement === "function") {
+            speakVoiceAnnouncement(msg);
+        }
+    }
+
+    // Instant WebSocket listener for Staff Approvals
+    if (typeof liveSync !== "undefined") {
+        liveSync.on("TOKEN_UPDATED", (payload) => {
+            console.log("🔔 [LiveSync] Staff updated token:", payload);
+            if (!payload || !payload.token_id) return;
+            const updatedToken = normalizeToken(payload.token_id);
+            const currentWatchingToken = getActiveToken();
+
+            if (currentWatchingToken === updatedToken) {
+                const stageName = payload.token ? payload.token.stage : "Updated";
+                try {
+                    if (typeof showToast === "function") {
+                        showToast(`🔔 Mandi Staff Update: ${stageName.replace('_', ' ')}`, "success");
+                    }
+                    if (typeof playChime === "function") {
+                        playChime(stageName === "PAYMENT_PROCESSED" ? "payment" : "stage_advance");
+                    }
+                    speakStageUpdateVoice(stageName);
+                } catch(e) {}
+                loadTokenTracker(currentWatchingToken);
+            }
+        });
+
+        liveSync.on("*", (event, payload) => {
+            if (event === "TOKEN_UPDATED" && payload && payload.token_id) {
+                const updatedToken = normalizeToken(payload.token_id);
+                const currentWatchingToken = getActiveToken();
+                if (currentWatchingToken === updatedToken) {
+                    loadTokenTracker(currentWatchingToken);
+                }
+            }
+        });
+    }
+
+    // Ultra-Fast 1.5-Second Live Poller (Guarantees zero-lag sync across tabs/browsers)
+    setInterval(async () => {
+        const currentToken = getActiveToken();
+        if (currentToken && currentToken.startsWith("AS-26-")) {
+            try {
+                const res = await fetch(`/api/farmers/token/${currentToken}`);
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data) {
+                        const hasStageChanged = !activeTokenData || data.stage !== activeTokenData.stage;
+                        const hasWeightChanged = activeTokenData && (data.gross_weight_kg !== activeTokenData.gross_weight_kg || data.tare_weight_kg !== activeTokenData.tare_weight_kg);
+                        
+                        if (hasStageChanged || hasWeightChanged) {
+                            console.log("⚡ [Auto-Sync] Detected Mandi Staff stage advance:", data.stage);
+                            if (activeTokenData && hasStageChanged) {
+                                try {
+                                    if (typeof showToast === "function") {
+                                        showToast(`🔔 Status Updated: ${data.stage.replace('_', ' ')}`, "success");
+                                    }
+                                    if (typeof playChime === "function") {
+                                        playChime(data.stage === "PAYMENT_PROCESSED" ? "payment" : "stage_advance");
+                                    }
+                                    speakStageUpdateVoice(data.stage);
+                                } catch(e) {}
+                            }
+                            activeTokenData = data;
+                            renderTrackerUI(data);
+                        }
+                    }
+                }
+            } catch (err) {}
+        }
+    }, 1500);
+
+    async function advanceCurrentTokenNext() {
+        const tokenId = getActiveToken();
+        console.log("⚡ Advance clicked for:", tokenId);
+
+        try {
+            const res = await fetch(`/api/farmers/token/${tokenId}/advance-next`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" }
+            });
+
+            if (res.ok) {
+                const data = await res.json();
+                showToast(`⚡ Advanced to: ${data.stage.replace('_', ' ')}`, "success");
+                if (typeof playChime === "function") {
+                    playChime(data.stage === "PAYMENT_PROCESSED" ? "payment" : "stage_advance");
+                }
+                speakStageUpdateVoice(data.stage);
+                activeTokenData = data;
+                renderTrackerUI(data);
+            } else {
+                const err = await res.json();
+                showToast(err.detail || "Could not advance token", "error");
+            }
+        } catch (err) {
+            console.error("Error advancing stage:", err);
+            showToast("Server error advancing stage", "error");
+        }
+    }
+
+    let autoSimTimer = null;
+
+    function toggleAutoSimulate() {
+        const btnText = document.getElementById("auto-play-text");
+        const btnIcon = document.getElementById("auto-play-icon");
+        const tokenId = getActiveToken();
+
+        if (autoSimTimer) {
+            clearInterval(autoSimTimer);
+            autoSimTimer = null;
+            if (btnText) btnText.innerText = "Auto-Play Demo";
+            if (btnIcon) btnIcon.innerText = "▶";
+            showToast("Simulation Paused", "info");
+        } else {
+            if (btnText) btnText.innerText = "Playing...";
+            if (btnIcon) btnIcon.innerText = "⏸";
+            showToast("▶ Auto-Play Started! Advancing stages...", "success");
+
+            advanceCurrentTokenNext();
+
+            autoSimTimer = setInterval(() => {
+                if (typeof activeTokenData !== "undefined" && activeTokenData && activeTokenData.stage === "PAYMENT_PROCESSED") {
+                    clearInterval(autoSimTimer);
+                    autoSimTimer = null;
+                    if (btnText) btnText.innerText = "Completed 🎉";
+                    if (btnIcon) btnIcon.innerText = "✅";
+                    showToast("🎉 All 5 Stages Completed! Voucher ready.", "success");
+                } else {
+                    advanceCurrentTokenNext();
+                }
+            }, 3000);
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        loadTokenTracker(INITIAL_TOKEN_ID);
+    });
+</script>
+{% endblock %}

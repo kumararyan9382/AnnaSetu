@@ -1,0 +1,168 @@
+/* AnnaSetu Custom Styles & GovTech / Agri Theme */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Rozha+One&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap');
+
+:root {
+    --primary: #15803d;       /* Emerald Green (Kisan/Agri) */
+    --primary-dark: #14532d;
+    --primary-light: #dcfce7;
+    --secondary: #d97706;     /* Saffron/Amber */
+    --secondary-light: #fef3c7;
+    --gov-blue: #1e3a8a;
+    --dark-bg: #0f172a;
+    --card-bg: #ffffff;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', 'Noto Sans Devanagari', -apple-system, BlinkMacSystemFont, sans-serif;
+    background-color: #f8fafc;
+    color: #1e293b;
+}
+
+.brand-font {
+    font-family: 'Rozha One', serif;
+}
+
+/* Glassmorphic Navbar & Hero */
+.glass-nav {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+}
+
+.hero-gradient {
+    background: linear-gradient(135deg, #14532d 0%, #15803d 50%, #047857 100%);
+}
+
+.gov-strip {
+    background: linear-gradient(90deg, #ff9933 33.3%, #ffffff 33.3%, #ffffff 66.6%, #138808 66.6%);
+    height: 4px;
+}
+
+/* Pulsing Badge & Live Indicators */
+@keyframes pulse-ring {
+    0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.7); }
+    70% { transform: scale(1); box-shadow: 0 0 0 10px rgba(22, 163, 74, 0); }
+    100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
+}
+
+.live-pulse {
+    animation: pulse-ring 2s infinite cubic-bezier(0.45, 0, 0.55, 1);
+}
+
+/* Stage Step Progress Connectors */
+.stage-card {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.stage-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+}
+
+.stage-card.active {
+    border-color: #16a34a;
+    background: #f0fdf4;
+}
+
+.stage-card.completed {
+    border-color: #059669;
+    background: #ffffff;
+}
+
+/* Modern Card Glow */
+.card-hover {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card-hover:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 24px -8px rgba(15, 23, 42, 0.08);
+}
+
+/* Digital Voucher Watermark & Styling */
+.voucher-paper {
+    background-color: #ffffff;
+    border: 2px dashed #cbd5e1;
+    position: relative;
+    overflow: hidden;
+}
+
+.voucher-paper::before {
+    content: "ANNASÈTU VERIFIED";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-30deg);
+    font-size: 3rem;
+    font-weight: 800;
+    color: rgba(22, 163, 74, 0.04);
+    pointer-events: none;
+    white-space: nowrap;
+}
+
+/* Print Styles for Official Receipt */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #printable-voucher, #printable-voucher * {
+        visibility: visible;
+    }
+    #printable-voucher {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        margin: 0;
+        padding: 20px;
+        box-shadow: none;
+        border: 1px solid #000;
+    }
+    .no-print {
+        display: none !important;
+    }
+}
+
+/* Accessibility: सरल किसान मोड (Simple Kisan Mode for Low-Literacy / Elder Farmers) */
+body.simple-mode-active {
+    font-size: 110%;
+    background-color: #f1f5f9;
+}
+
+body.simple-mode-active h1,
+body.simple-mode-active h2,
+body.simple-mode-active h3,
+body.simple-mode-active h4 {
+    font-weight: 900 !important;
+}
+
+body.simple-mode-active input,
+body.simple-mode-active select,
+body.simple-mode-active button {
+    font-size: 1.05rem !important;
+    min-height: 50px;
+}
+
+body.simple-mode-active .crop-visual-card,
+body.simple-mode-active .vehicle-visual-card,
+body.simple-mode-active .stage-card {
+    border-width: 3px !important;
+}
+
+body.simple-mode-active label {
+    font-size: 0.95rem !important;
+    font-weight: 900 !important;
+    color: #0f172a !important;
+}
+
+/* Audio Pulse Effect */
+.audio-pulse {
+    animation: audio-ring 1.8s infinite ease-in-out;
+}
+
+@keyframes audio-ring {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}

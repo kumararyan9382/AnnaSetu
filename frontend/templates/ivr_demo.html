@@ -1,0 +1,115 @@
+{% extends "base.html" %}
+
+{% block title %}Voice & IVR Accessibility Assistant | AnnaSetu (अन्नसेतु){% endblock %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+    <!-- Header -->
+    <div class="text-center space-y-2">
+        <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold">
+            <span>📞 Voice & IVR Accessibility Engine</span>
+        </div>
+        <h1 class="text-3xl font-black text-slate-900 tracking-tight">Kisan Voice & Phone Status Inquiries</h1>
+        <p class="text-sm text-slate-500 max-w-xl mx-auto">
+            Designed for farmers with low literacy or basic feature phones. Check your token status simply by speaking or entering your mobile number.
+        </p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+
+        <!-- Simulated Mobile Phone Interface -->
+        <div class="bg-slate-900 rounded-[2.5rem] p-6 shadow-2xl border-4 border-slate-800 text-white space-y-6 max-w-sm mx-auto w-full">
+            <!-- Handset Speaker & Notch -->
+            <div class="flex justify-center">
+                <div class="w-16 h-1 bg-slate-700 rounded-full"></div>
+            </div>
+
+            <!-- Phone Screen Area -->
+            <div class="bg-slate-800 rounded-2xl p-4 space-y-3 border border-slate-700">
+                <div class="flex justify-between items-center text-[10px] text-slate-400">
+                    <span>Toll-Free: 1800-180-2626</span>
+                    <span class="text-emerald-400 font-bold">Connected 📶</span>
+                </div>
+                <input type="text" id="ivr-phone-input" placeholder="Type or dial number..." class="w-full bg-transparent text-xl font-mono font-bold text-center text-white placeholder-slate-500 focus:outline-none tracking-widest" value="9876543210" />
+            </div>
+
+            <!-- Speech Mic Trigger Button -->
+            <div class="flex justify-center">
+                <button id="voice-mic-btn" onclick="toggleVoiceListen()" class="w-16 h-16 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white flex items-center justify-center text-2xl shadow-lg transition-all focus:outline-none">
+                    <span id="voice-mic-icon">🎙️</span>
+                </button>
+            </div>
+            <p class="text-center text-[11px] text-slate-400">Tap microphone & speak mobile / token number</p>
+
+            <!-- Phone Dialpad Grid -->
+            <div class="grid grid-cols-3 gap-3">
+                <button onclick="pressKeypad('1')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl text-base font-bold text-center">1</button>
+                <button onclick="pressKeypad('2')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl text-base font-bold text-center">2</button>
+                <button onclick="pressKeypad('3')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl text-base font-bold text-center">3</button>
+                <button onclick="pressKeypad('4')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl text-base font-bold text-center">4</button>
+                <button onclick="pressKeypad('5')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl text-base font-bold text-center">5</button>
+                <button onclick="pressKeypad('6')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl text-base font-bold text-center">6</button>
+                <button onclick="pressKeypad('7')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl text-base font-bold text-center">7</button>
+                <button onclick="pressKeypad('8')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl text-base font-bold text-center">8</button>
+                <button onclick="pressKeypad('9')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl text-base font-bold text-center">9</button>
+                <button onclick="clearKeypad()" class="py-3 bg-rose-950/60 hover:bg-rose-900 text-rose-300 rounded-xl text-xs font-bold text-center">Clear</button>
+                <button onclick="pressKeypad('0')" class="py-3 bg-slate-800 hover:bg-slate-700 rounded-xl text-base font-bold text-center">0</button>
+                <button onclick="lookupVoiceQuery(document.getElementById('ivr-phone-input').value.trim())" class="py-3 bg-emerald-700 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold text-center">Call 📞</button>
+            </div>
+        </div>
+
+        <!-- Voice Output Transcript & Live Details Box -->
+        <div class="space-y-6">
+            <!-- Spoken Audio Transcript Box -->
+            <div id="ivr-speech-box" class="bg-white rounded-3xl border border-slate-200 p-6 shadow-sm space-y-4">
+                <div class="flex items-center space-x-2 text-emerald-700">
+                    <span class="text-xl">🔊</span>
+                    <h3 class="font-black text-sm">Automated Voice Response (आवाज में उत्तर)</h3>
+                </div>
+
+                <div class="p-4 bg-emerald-50/70 border border-emerald-200 rounded-2xl">
+                    <p id="ivr-speech-text" class="text-sm font-medium text-slate-800 leading-relaxed">
+                        नमस्ते राजेश्वर सिंह जी। आपका टोकन नंबर AS-26-WHT-101 है। केंद्र: करनाल अनाज मंडी। वर्तमान स्थिति: आपकी फसल की गुणवत्ता और नमी की जांच हो रही है। अनुमानित प्रतीक्षा समय लगभग 10 मिनट है।
+                    </p>
+                </div>
+
+                <div class="flex items-center justify-between text-xs text-slate-400">
+                    <span>Synthesized via Web Speech API</span>
+                    <button onclick="lookupVoiceQuery(document.getElementById('ivr-phone-input').value.trim())" class="text-emerald-700 font-bold hover:underline">Replay Audio ↺</button>
+                </div>
+            </div>
+
+            <!-- Matched Token Card Container -->
+            <div id="ivr-token-card">
+                <!-- Dynamically populated -->
+            </div>
+
+            <!-- Pre-set Demo Inquiries -->
+            <div class="bg-slate-100 p-6 rounded-3xl space-y-3 text-xs">
+                <h4 class="font-bold text-slate-800">💡 Quick Sample Inquiries to Test:</h4>
+                <div class="flex flex-wrap gap-2">
+                    <button onclick="document.getElementById('ivr-phone-input').value = '9876543210'; lookupVoiceQuery('9876543210');" class="px-3 py-1.5 bg-white rounded-xl border border-slate-300 font-mono text-slate-700 hover:border-emerald-500">
+                        📱 Rajeshwar (9876543210)
+                    </button>
+                    <button onclick="document.getElementById('ivr-phone-input').value = '9812345678'; lookupVoiceQuery('9812345678');" class="px-3 py-1.5 bg-white rounded-xl border border-slate-300 font-mono text-slate-700 hover:border-emerald-500">
+                        📱 Gurpreet (9812345678)
+                    </button>
+                    <button onclick="document.getElementById('ivr-phone-input').value = 'AS-26-SOY-104'; lookupVoiceQuery('AS-26-SOY-104');" class="px-3 py-1.5 bg-white rounded-xl border border-slate-300 font-mono text-slate-700 hover:border-emerald-500">
+                        🏷️ Token AS-26-SOY-104
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="/static/js/voice_assistant.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        initVoiceAssistant();
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,319 @@
+{% extends "base.html" %}
+
+{% block title %}Compare Mandi Prices & Distance | KisanMitra AnnaSetu{% endblock %}
+
+{% block content %}
+<div class="space-y-8 max-w-6xl mx-auto">
+
+    <!-- Header -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200/80 pb-5">
+        <div>
+            <div class="flex items-center space-x-2 text-xs font-bold text-emerald-800 uppercase tracking-wider mb-1">
+                <span>📍</span>
+                <span>PRICE DISCOVERY & MANDI DISTANCE COMPARISON</span>
+            </div>
+            <h1 class="text-3xl font-black text-slate-900 tracking-tight">
+                Compare Mandi Buying Prices & Distance
+            </h1>
+            <p class="text-xs text-slate-500 mt-1">
+                देखें कौन सी मंडी दे रही है सबसे बेहतर भाव और कितनी दूरी पर है (सरकारी APMC एवं टॉप प्राइवेट केंद्र)
+            </p>
+        </div>
+
+        <div class="flex items-center space-x-3">
+            <a href="/sales" class="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-2xl text-xs font-bold transition-all flex items-center space-x-1.5">
+                <span>📦</span>
+                <span>My Sales Passbook</span>
+            </a>
+            <a href="/book" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-2xl text-xs font-bold shadow-md transition-all flex items-center space-x-1.5">
+                <span>🌾</span>
+                <span>Direct Slot Booking</span>
+            </a>
+        </div>
+    </div>
+
+    <!-- Live Crop Price & Quantity Calculator Bar -->
+    <div class="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-xs space-y-4">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Select Crop (फसल चुनें)</label>
+                <select id="calc-crop-select" onchange="loadMandiPrices()" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 font-bold text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none cursor-pointer">
+                    <option value="Wheat (गेहूं)">Wheat (गेहूं) — Base MSP ₹2,425/Qtl</option>
+                    <option value="Mustard / Rapeseed (सरसों)">Mustard / Rapeseed (सरसों) — Base MSP ₹5,950/Qtl</option>
+                    <option value="Paddy Grade A (धान ग्रेड-ए)">Paddy Grade A (धान) — Base MSP ₹2,320/Qtl</option>
+                    <option value="Soybean (सोयाबीन)">Soybean (सोयाबीन) — Base MSP ₹4,892/Qtl</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Your Harvest Quantity (मात्रा - क्विंटल)</label>
+                <input type="number" id="calc-qty-input" oninput="loadMandiPrices()" value="50.0" step="1" min="1" max="1000" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 font-black text-slate-900 focus:ring-2 focus:ring-emerald-500 focus:outline-none" />
+            </div>
+
+            <div>
+                <label class="block font-bold text-slate-700 mb-1">Sort Mandis By (प्राथमिकता)</label>
+                <select id="calc-sort-select" onchange="loadMandiPrices()" class="w-full px-4 py-2.5 rounded-xl border border-slate-300 font-bold text-slate-800 focus:ring-2 focus:ring-emerald-500 focus:outline-none cursor-pointer">
+                    <option value="price">💰 Highest Buying Price (अधिकतम मुनाफा)</option>
+                    <option value="distance">📍 Nearest to Village (सबसे कम दूरी)</option>
+                    <option value="wait_time">⏱️ Lowest Wait Time (सबसे तेज़ तौल)</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Filter Pill Tabs -->
+        <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-slate-100 text-xs">
+            <div class="flex items-center space-x-2 font-bold">
+                <button onclick="setMandiFilter('ALL')" id="filter-all-tab" class="px-4 py-1.5 rounded-xl bg-emerald-100 text-emerald-900 border border-emerald-300 shadow-xs">
+                    All Centers (7)
+                </button>
+                <button onclick="setMandiFilter('PRIVATE')" id="filter-pvt-tab" class="px-4 py-1.5 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200">
+                    🏢 Private Corporate (4)
+                </button>
+                <button onclick="setMandiFilter('GOVT')" id="filter-govt-tab" class="px-4 py-1.5 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200">
+                    🏛️ Government APMC (3)
+                </button>
+            </div>
+
+            <div class="text-[11px] text-slate-400">
+                Auto-updated with verified APMC & Corporate spot rates
+            </div>
+        </div>
+    </div>
+
+    <!-- Spotlight Best Value Card -->
+    <div id="spotlight-card" class="bg-gradient-to-r from-[#105a33] to-[#0c4326] rounded-3xl p-6 sm:p-8 text-white shadow-xl shadow-emerald-950/20 relative overflow-hidden space-y-4">
+        <div class="flex items-center space-x-2">
+            <span class="px-3 py-1 rounded-full bg-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider">
+                🌟 HIGHEST PROFIT RECOMMENDATION
+            </span>
+            <span class="text-xs text-emerald-200 font-medium">Earn Maximum Income on your Produce</span>
+        </div>
+
+        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <div class="space-y-1 max-w-xl">
+                <h3 id="spotlight-name" class="text-2xl sm:text-3xl font-black">ITC e-Choupal Rural Hub</h3>
+                <p id="spotlight-operator" class="text-xs text-emerald-200 font-medium">ITC Limited Agri-Business • Karnal-Kaithal Highway</p>
+                <p id="spotlight-facility" class="text-[11px] text-emerald-100/90 pt-1">🌟 +₹85/Qtl Higher Price, 0% Commission, Instant UPI Payment, Free Soil Test</p>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-4 bg-white/10 p-5 rounded-2xl border border-white/20 backdrop-blur-md">
+                <div>
+                    <p class="text-[10px] text-emerald-200 uppercase font-bold">Buying Price</p>
+                    <p id="spotlight-price" class="text-2xl sm:text-3xl font-black font-mono text-amber-300">₹2,510 <span class="text-xs font-normal text-white">/Qtl</span></p>
+                    <span id="spotlight-bonus" class="px-2 py-0.5 bg-amber-400/90 text-slate-950 text-[10px] font-black rounded-md">+₹85/Qtl Bonus</span>
+                </div>
+                
+                <div class="h-10 w-px bg-white/20 hidden sm:block"></div>
+
+                <div>
+                    <p class="text-[10px] text-emerald-200 uppercase font-bold">Distance & Travel</p>
+                    <p id="spotlight-dist" class="text-xl sm:text-2xl font-black font-mono">3.8 km</p>
+                    <p id="spotlight-travel" class="text-[10px] text-emerald-200">~8 Mins drive</p>
+                </div>
+
+                <div class="h-10 w-px bg-white/20 hidden sm:block"></div>
+
+                <div>
+                    <p class="text-[10px] text-emerald-200 uppercase font-bold">Your Total Payout</p>
+                    <p id="spotlight-total" class="text-2xl sm:text-3xl font-black font-mono text-emerald-300">₹1,25,500</p>
+                    <span id="spotlight-profit-delta" class="text-[10px] text-amber-300 font-bold">+₹4,250 Extra Profit</span>
+                </div>
+
+                <a href="/book" class="px-5 py-3 bg-amber-400 hover:bg-amber-500 text-slate-950 font-black text-xs rounded-xl shadow-lg transition-all flex-shrink-0">
+                    Book Slot Here &rarr;
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- All Mandis Cards Comparison Grid -->
+    <div class="space-y-4">
+        <h3 class="text-lg font-black text-slate-900 flex items-center space-x-2">
+            <span>🏢</span>
+            <span>All Available Mandis & Real-Time Price Comparison</span>
+        </h3>
+
+        <div id="mandis-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Dynamically populated via JS -->
+            <div class="p-8 bg-white border border-slate-200 rounded-3xl text-center text-slate-400 text-xs">
+                Loading live mandi pricing and distance telemetry...
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    let currentFilter = "ALL";
+    let allMandiData = [];
+
+    async function loadMandiPrices() {
+        const crop = document.getElementById("calc-crop-select").value;
+        const qty = parseFloat(document.getElementById("calc-qty-input").value) || 50.0;
+        const sortBy = document.getElementById("calc-sort-select").value;
+
+        try {
+            const res = await fetch(`/api/centers/compare-prices?crop=${encodeURIComponent(crop)}&quantity_qtl=${qty}&sort_by=${sortBy}`);
+            const data = await res.json();
+
+            if (data.success && data.mandis) {
+                allMandiData = data.mandis;
+                renderSpotlight(allMandiData[0], data.base_msp_rate);
+                renderMandiCards();
+            }
+        } catch (err) {
+            console.error("Error loading mandi prices:", err);
+        }
+    }
+
+    function renderSpotlight(topMandi, baseMsp) {
+        if (!topMandi) return;
+        document.getElementById("spotlight-name").innerText = topMandi.center_name;
+        document.getElementById("spotlight-operator").innerText = `${topMandi.operator_name} • ${topMandi.location}`;
+        document.getElementById("spotlight-facility").innerText = topMandi.facilities || "Certified electronic weighing and instant payment";
+        document.getElementById("spotlight-price").innerHTML = `₹${topMandi.buying_price_per_qtl} <span class="text-xs font-normal text-white">/Qtl</span>`;
+        
+        const bonusEl = document.getElementById("spotlight-bonus");
+        if (topMandi.price_delta_per_qtl > 0) {
+            bonusEl.innerText = `+₹${topMandi.price_delta_per_qtl}/Qtl Bonus over MSP`;
+            bonusEl.classList.remove("hidden");
+        } else {
+            bonusEl.innerText = `Official Govt MSP Rate`;
+        }
+
+        document.getElementById("spotlight-dist").innerText = `${topMandi.distance_km} km`;
+        document.getElementById("spotlight-travel").innerText = `~${topMandi.travel_time_mins} Mins drive`;
+        document.getElementById("spotlight-total").innerText = `₹${topMandi.total_net_payout_inr.toLocaleString("en-IN")}`;
+        
+        const profitEl = document.getElementById("spotlight-profit-delta");
+        if (topMandi.profit_delta_inr > 0) {
+            profitEl.innerText = `+₹${topMandi.profit_delta_inr.toLocaleString("en-IN")} Extra Profit`;
+            profitEl.classList.remove("hidden");
+        } else {
+            profitEl.innerText = `Standard Guaranteed MSP`;
+        }
+    }
+
+    function renderMandiCards() {
+        const grid = document.getElementById("mandis-grid");
+        if (!grid) return;
+
+        let filtered = allMandiData;
+        if (currentFilter === "PRIVATE") {
+            filtered = allMandiData.filter(m => m.mandi_type === "PRIVATE_CORPORATE");
+        } else if (currentFilter === "GOVT") {
+            filtered = allMandiData.filter(m => m.mandi_type !== "PRIVATE_CORPORATE");
+        }
+
+        if (filtered.length === 0) {
+            grid.innerHTML = `<div class="col-span-2 p-8 bg-white border border-slate-200 rounded-3xl text-center text-slate-400 text-xs">No mandis found matching the selected filter.</div>`;
+            return;
+        }
+
+        grid.innerHTML = filtered.map(m => {
+            const isPvt = m.mandi_type === "PRIVATE_CORPORATE";
+            const mandiTypeBadge = isPvt 
+                ? `<span class="px-2.5 py-1 rounded-full bg-amber-100 text-amber-900 font-extrabold text-[10px]">🏢 Private Corporate Hub</span>`
+                : `<span class="px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-800 font-extrabold text-[10px]">🏛️ Government APMC</span>`;
+
+            const bonusBadge = m.price_delta_per_qtl > 0 
+                ? `<span class="px-2 py-0.5 rounded-md bg-emerald-600 text-white font-black text-[10px]">+₹${m.price_delta_per_qtl}/Qtl Higher</span>`
+                : `<span class="px-2 py-0.5 rounded-md bg-slate-100 text-slate-600 font-bold text-[10px]">Govt MSP Rate</span>`;
+
+            const profitTag = m.profit_delta_inr > 0
+                ? `<span class="text-emerald-700 font-bold text-xs">(+₹${m.profit_delta_inr.toLocaleString("en-IN")} Extra Income)</span>`
+                : `<span class="text-slate-400 text-xs">Assured MSP</span>`;
+
+            const congestionColor = {
+                "Smooth": "bg-emerald-50 text-emerald-800 border-emerald-200",
+                "Light": "bg-blue-50 text-blue-800 border-blue-200",
+                "Moderate": "bg-amber-50 text-amber-800 border-amber-200",
+                "Busy": "bg-rose-50 text-rose-800 border-rose-200"
+            }[m.congestion_status] || "bg-slate-50 text-slate-800";
+
+            return `
+                <div class="bg-white rounded-3xl border border-slate-200/80 p-6 shadow-xs hover:border-emerald-500 hover:shadow-md transition-all space-y-5 flex flex-col justify-between ${m.is_best_price ? 'ring-2 ring-emerald-500' : ''}">
+                    
+                    <div class="space-y-3">
+                        <div class="flex items-center justify-between gap-2">
+                            ${mandiTypeBadge}
+                            <span class="px-2.5 py-1 rounded-full border text-[10px] font-bold ${congestionColor}">
+                                ⏱️ ${m.avg_wait_mins} Mins Wait (${m.congestion_status})
+                            </span>
+                        </div>
+
+                        <div>
+                            <h4 class="font-extrabold text-slate-900 text-base leading-tight">${m.center_name}</h4>
+                            <p class="text-xs text-slate-400 font-medium mt-0.5">${m.operator_name}</p>
+                            <p class="text-[11px] text-slate-500 flex items-center space-x-1 mt-1">
+                                <span>📍</span>
+                                <span>${m.location} • <b>${m.distance_km} km</b> (~${m.travel_time_mins} Mins by tractor)</span>
+                            </p>
+                        </div>
+
+                        <!-- Price Comparison Box -->
+                        <div class="p-4 bg-slate-50 rounded-2xl border border-slate-200/80 space-y-2">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-slate-500 font-medium">Buying Rate:</span>
+                                <div class="flex items-center space-x-2">
+                                    <span class="font-mono font-black text-base text-slate-900">₹${m.buying_price_per_qtl} <span class="text-xs font-normal text-slate-500">/Qtl</span></span>
+                                    ${bonusBadge}
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between pt-1 border-t border-slate-200/60">
+                                <span class="text-xs font-bold text-slate-700">Estimated Total Payout:</span>
+                                <div class="text-right">
+                                    <span class="font-mono font-black text-base text-emerald-900">₹${m.total_net_payout_inr.toLocaleString("en-IN")}</span>
+                                    <span class="block text-[10px]">${profitTag}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Key Features / Highlights -->
+                        <div class="space-y-1 text-[11px] text-slate-600">
+                            <p class="flex items-center space-x-1.5">
+                                <span>💳</span>
+                                <span><b>Payment:</b> ${m.payment_speed}</span>
+                            </p>
+                            <p class="flex items-center space-x-1.5 text-slate-500">
+                                <span>⭐</span>
+                                <span><b>Rating:</b> ${m.rating} / 5.0 • Certified Scales</span>
+                            </p>
+                        </div>
+                    </div>
+
+                    <!-- Action Button -->
+                    <div class="pt-2 border-t border-slate-100 flex items-center justify-between">
+                        <span class="text-xs text-slate-400 font-mono">ID: ${m.center_id}</span>
+                        <a href="/book" class="px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow transition-all flex items-center space-x-1.5">
+                            <span>Book Slot</span>
+                            <span>&rarr;</span>
+                        </a>
+                    </div>
+
+                </div>
+            `;
+        }).join("");
+    }
+
+    function setMandiFilter(type) {
+        currentFilter = type;
+        document.getElementById("filter-all-tab").className = "px-4 py-1.5 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 font-bold";
+        document.getElementById("filter-pvt-tab").className = "px-4 py-1.5 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 font-bold";
+        document.getElementById("filter-govt-tab").className = "px-4 py-1.5 rounded-xl bg-slate-100 text-slate-700 hover:bg-slate-200 font-bold";
+
+        if (type === "ALL") {
+            document.getElementById("filter-all-tab").className = "px-4 py-1.5 rounded-xl bg-emerald-100 text-emerald-900 border border-emerald-300 font-bold shadow-xs";
+        } else if (type === "PRIVATE") {
+            document.getElementById("filter-pvt-tab").className = "px-4 py-1.5 rounded-xl bg-amber-100 text-amber-900 border border-amber-300 font-bold shadow-xs";
+        } else if (type === "GOVT") {
+            document.getElementById("filter-govt-tab").className = "px-4 py-1.5 rounded-xl bg-emerald-100 text-emerald-900 border border-emerald-300 font-bold shadow-xs";
+        }
+        renderMandiCards();
+    }
+
+    document.addEventListener("DOMContentLoaded", loadMandiPrices);
+</script>
+{% endblock %}
